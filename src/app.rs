@@ -63,7 +63,7 @@ impl State {
         match self.active_panel {
             ui::Panel::Source => self.source_pos += 1,
             ui::Panel::Output => self.output_pos += 1,
-            _ => return
+            _ => {}
         };
     }
 
@@ -79,7 +79,7 @@ impl State {
                     self.output_pos -= 1;
                 }
             },
-            _ => return
+            _ => {}
         };
     }
 
@@ -100,7 +100,7 @@ fn run_command(command: &str, filename: &str) -> String {
             .arg(filename)
             .output().expect("Command execution failed");
     let result = String::from_utf8(command.stdout).expect("Invalid stdout");
-    if "" == result {
+    if result.is_empty() {
         return String::from_utf8(command.stderr).expect("Invalid stderr");
     }
     result

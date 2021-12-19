@@ -17,7 +17,6 @@ fn main() {
     match opts::Flags::get() {
         opts::Flags::Help => {
             show_help();
-            return;
         },
         opts::Flags::Filename(fname) => run(fname)
     };

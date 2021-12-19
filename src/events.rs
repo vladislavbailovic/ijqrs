@@ -20,7 +20,7 @@ fn handle_key_event(key: KeyEvent, state: &mut app::State) -> app::Signal {
                 ui::Panel::Output => ui::Panel::Source,
                 ui::Panel::Source => ui::Panel::Command
             };
-            return app::Signal::Nop;
+            app::Signal::Nop
         },
         KeyEvent{
             code,
@@ -44,12 +44,12 @@ fn handle_key_code(code: KeyCode, modifiers: KeyModifiers, state: &mut app::Stat
         },
         _ => return app::Signal::Nop
     };
-    return app::Signal::Nop;
+    app::Signal::Nop
 }
 
 pub fn handler(state: &mut app::State) -> app::Signal {
     if let Ok(Event::Key(key)) = event::read() {
         return handle_key_event(key, state);
     }
-    return app::Signal::Nop;
+    app::Signal::Nop
 }
