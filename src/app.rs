@@ -24,11 +24,11 @@ impl State {
             .expect("Error reading file");
         let command = String::from(".|keys");
         let output = run_command(&command);
-        return State{
+        State{
             filename: String::from(filename),
             active_panel: ui::Panel::Output,
             source_pos: 0, output_pos: 0,
-            command, output, source };
+            command, output, source }
     }
 }
 
