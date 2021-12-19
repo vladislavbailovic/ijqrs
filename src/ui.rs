@@ -19,7 +19,7 @@ const COLOR_BG: Color = Color::Black;
 const COLOR_FG: Color = Color::Gray;
 const COLOR_FG_ACTIVE: Color = Color::White;
 
-pub fn draw<B: Backend>(frame: &mut Frame<B>, app: &mut app::State) {
+pub fn draw<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
     let frame_size = frame.size();
     let half_width = frame_size.width / 2;
     let vert_height = frame_size.height - 3;
@@ -42,16 +42,16 @@ pub fn draw<B: Backend>(frame: &mut Frame<B>, app: &mut app::State) {
         frame_size.height - vert_height
     );
 
-    let source_output = Paragraph::new(app.source.as_str())
-        .block(get_block(&Panel::Source, String::from("Source"), app))
-        .scroll((app.source_pos as u16, 0))
+    let source_output = Paragraph::new(state.source.as_str())
+        .block(get_block(&Panel::Source, String::from("Source"), state))
+        .scroll((state.source_pos as u16, 0))
         .wrap(Wrap { trim: true });
-    let result_output = Paragraph::new(app.output.as_str())
-        .block(get_block(&Panel::Output, String::from("Result"), app))
-        .scroll((app.output_pos as u16, 0))
+    let result_output = Paragraph::new(state.output.as_str())
+        .block(get_block(&Panel::Output, String::from("Result"), state))
+        .scroll((state.output_pos as u16, 0))
         .wrap(Wrap { trim: true });
-    let cmd_output = Paragraph::new(app.command.as_str())
-        .block(get_block(&Panel::Command, String::from("Command"), app))
+    let cmd_output = Paragraph::new(state.command.as_str())
+        .block(get_block(&Panel::Command, String::from("Command"), state))
         .wrap(Wrap { trim: true });
 
     frame.render_widget(source_output, source_size);
@@ -59,13 +59,13 @@ pub fn draw<B: Backend>(frame: &mut Frame<B>, app: &mut app::State) {
     frame.render_widget(cmd_output, cmd_size);
 }
 
-fn get_block(panel: &Panel, title: String, app: &app::State) -> Block<'static> {
+fn get_block(panel: &Panel, title: String, state: &app::State) -> Block<'static> {
     let fg: Color = match panel {
-        Panel::Source => match app.active_panel {
+        Panel::Source => match state.active_panel {
             Panel::Source => COLOR_FG_ACTIVE,
             _ => COLOR_FG,
         },
-        Panel::Output => match app.active_panel {
+        Panel::Output => match state.active_panel {
             Panel::Output => COLOR_FG_ACTIVE,
             _ => COLOR_FG,
         },
