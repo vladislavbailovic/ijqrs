@@ -1,5 +1,5 @@
-use std::process::Command;
 use std::fs;
+use std::process::Command;
 
 use super::ui;
 
@@ -19,23 +19,25 @@ pub struct State {
 
     source_pos: usize,
     output_pos: usize,
-    history_pos: usize
+    history_pos: usize,
 }
 
 impl State {
     pub fn new(filename: &str) -> State {
-        let source = fs::read_to_string(filename)
-            .expect("Error reading file");
+        let source = fs::read_to_string(filename).expect("Error reading file");
         let command = String::from(".|keys");
         let output = run_command(&command, filename);
-        State{
+        State {
             filename: String::from(filename),
             command_history: vec![command.as_str().to_string()],
             active_panel: ui::Panel::Command,
-            source_pos: 0, output_pos: 0,
-            command, output, source,
+            source_pos: 0,
+            output_pos: 0,
+            command,
+            output,
+            source,
 
-            history_pos: 0
+            history_pos: 0,
         }
     }
 
@@ -73,12 +75,12 @@ impl State {
                 if self.source_pos > 0 {
                     self.source_pos -= 1;
                 }
-            },
+            }
             ui::Panel::Output => {
                 if self.output_pos > 0 {
                     self.output_pos -= 1;
                 }
-            },
+            }
             _ => {}
         };
     }
@@ -88,7 +90,7 @@ impl State {
         let y = match panel {
             ui::Panel::Source => self.source_pos,
             ui::Panel::Output => self.output_pos,
-            _ => 0
+            _ => 0,
         };
         (y as u16, x)
     }
@@ -96,9 +98,10 @@ impl State {
 
 fn run_command(command: &str, filename: &str) -> String {
     let command = Command::new("jq")
-            .arg(command)
-            .arg(filename)
-            .output().expect("Command execution failed");
+        .arg(command)
+        .arg(filename)
+        .output()
+        .expect("Command execution failed");
     let result = String::from_utf8(command.stdout).expect("Invalid stdout");
     if result.is_empty() {
         return String::from_utf8(command.stderr).expect("Invalid stderr");

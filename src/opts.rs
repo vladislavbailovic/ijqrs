@@ -2,7 +2,7 @@ use std::env;
 
 pub enum Flags {
     Filename(String),
-    Help
+    Help,
 }
 
 impl Flags {
@@ -13,7 +13,7 @@ impl Flags {
         }
         match args[1].as_ref() {
             "-h" => Flags::Help,
-            filename => Flags::Filename(String::from(filename))
+            filename => Flags::Filename(String::from(filename)),
         }
     }
 }

@@ -1,9 +1,9 @@
 use tui::{
-    Frame,
     backend::Backend,
-    widgets::{Block, Borders, Wrap, Paragraph},
     layout::Rect,
-    style::{Style, Color}
+    style::{Color, Style},
+    widgets::{Block, Borders, Paragraph, Wrap},
+    Frame,
 };
 
 use super::app;
@@ -12,7 +12,7 @@ use super::app;
 pub enum Panel {
     Source,
     Output,
-    Command
+    Command,
 }
 
 const COLOR_BG: Color = Color::Black;
@@ -23,23 +23,18 @@ pub fn draw<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
     let frame_size = frame.size();
     let half_width = frame_size.width / 2;
     let vert_height = frame_size.height - 3;
-    let source_size = Rect::new(
-        frame_size.x,
-        frame_size.y,
-        half_width,
-        vert_height
-    );
+    let source_size = Rect::new(frame_size.x, frame_size.y, half_width, vert_height);
     let result_size = Rect::new(
         frame_size.x + half_width,
         frame_size.y,
         half_width,
-        vert_height
+        vert_height,
     );
     let cmd_size = Rect::new(
         frame_size.x,
         frame_size.y + vert_height,
         frame_size.width,
-        frame_size.height - vert_height
+        frame_size.height - vert_height,
     );
 
     let source_output = Paragraph::new(state.source.as_str())
@@ -72,9 +67,10 @@ fn get_block(panel: &Panel, title: String, state: &app::State) -> Block<'static>
         Panel::Command => match state.active_panel {
             Panel::Command => COLOR_FG_ACTIVE,
             _ => COLOR_FG,
-        }
+        },
     };
-    Block::default().title(String::from(" ") + &title + " ")
+    Block::default()
+        .title(String::from(" ") + &title + " ")
         .borders(Borders::ALL)
         .style(Style::default().fg(fg).bg(COLOR_BG))
 }
