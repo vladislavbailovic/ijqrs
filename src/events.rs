@@ -32,11 +32,11 @@ fn handle_key_code(code: KeyCode, modifiers: KeyModifiers, state: &mut app::Stat
     match code {
         KeyCode::Char(c) => { state.command.push(c); },
         KeyCode::Backspace => { state.command.pop(); },
-        KeyCode::Enter => { state.output = app::run_command(&state.command) }
+        KeyCode::Enter => { state.run_current_command(); }
         KeyCode::Down => match state.active_panel {
             ui::Panel::Source => state.source_pos += 1,
             ui::Panel::Output => state.output_pos += 1,
-            _ => return app::Signal::Nop,
+            ui::Panel::Command => state.next_from_history()
         },
         KeyCode::Up => match state.active_panel {
             ui::Panel::Source => if state.source_pos > 0 {
@@ -45,7 +45,7 @@ fn handle_key_code(code: KeyCode, modifiers: KeyModifiers, state: &mut app::Stat
             ui::Panel::Output => if state.output_pos > 0 {
                 state.output_pos -= 1;
             },
-            _ => return app::Signal::Nop,
+            ui::Panel::Command => state.prev_from_history()
         },
         _ => return app::Signal::Nop
     };
