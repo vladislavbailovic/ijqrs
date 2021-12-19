@@ -44,11 +44,11 @@ pub fn draw<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
 
     let source_output = Paragraph::new(state.source.as_str())
         .block(get_block(&Panel::Source, String::from("Source"), state))
-        .scroll((state.source_pos as u16, 0))
+        .scroll(state.scroll_pos(Panel::Source))
         .wrap(Wrap { trim: true });
     let result_output = Paragraph::new(state.output.as_str())
         .block(get_block(&Panel::Output, String::from("Result"), state))
-        .scroll((state.output_pos as u16, 0))
+        .scroll(state.scroll_pos(Panel::Output))
         .wrap(Wrap { trim: true });
     let cmd_output = Paragraph::new(state.command.as_str())
         .block(get_block(&Panel::Command, String::from("Command"), state))

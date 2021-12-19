@@ -9,15 +9,16 @@ pub enum Signal {
 }
 
 pub struct State {
-    pub filename: String,
-    pub command: String,
-    pub command_history: Vec<String>,
     pub output: String,
+    pub command: String,
     pub source: String,
     pub active_panel: ui::Panel,
-    pub source_pos: usize,
-    pub output_pos: usize,
 
+    filename: String,
+    command_history: Vec<String>,
+
+    source_pos: usize,
+    output_pos: usize,
     history_pos: usize
 }
 
@@ -57,9 +58,43 @@ impl State {
             self.command = self.command_history[self.history_pos].as_str().to_string();
         }
     }
+
+    pub fn scroll_down(&mut self) {
+        match self.active_panel {
+            ui::Panel::Source => self.source_pos += 1,
+            ui::Panel::Output => self.output_pos += 1,
+            _ => return
+        };
+    }
+
+    pub fn scroll_up(&mut self) {
+        match self.active_panel {
+            ui::Panel::Source => {
+                if self.source_pos > 0 {
+                    self.source_pos -= 1;
+                }
+            },
+            ui::Panel::Output => {
+                if self.output_pos > 0 {
+                    self.output_pos -= 1;
+                }
+            },
+            _ => return
+        };
+    }
+
+    pub fn scroll_pos(&self, panel: ui::Panel) -> (u16, u16) {
+        let x = 0;
+        let y = match panel {
+            ui::Panel::Source => self.source_pos,
+            ui::Panel::Output => self.output_pos,
+            _ => 0
+        };
+        (y as u16, x)
+    }
 }
 
-pub fn run_command(command: &str) -> String {
+fn run_command(command: &str) -> String {
     let command = Command::new("jq")
             .arg(command)
             .arg("./examples/generated.json")

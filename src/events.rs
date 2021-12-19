@@ -35,18 +35,12 @@ fn handle_key_code(code: KeyCode, modifiers: KeyModifiers, state: &mut app::Stat
         KeyCode::Backspace => { state.command.pop(); },
         KeyCode::Enter => { state.run_current_command(); }
         KeyCode::Down => match state.active_panel {
-            ui::Panel::Source => state.source_pos += 1,
-            ui::Panel::Output => state.output_pos += 1,
-            ui::Panel::Command => state.next_from_history()
+            ui::Panel::Command => state.next_from_history(),
+            _ => state.scroll_down()
         },
         KeyCode::Up => match state.active_panel {
-            ui::Panel::Source => if state.source_pos > 0 {
-                state.source_pos -= 1;
-            },
-            ui::Panel::Output => if state.output_pos > 0 {
-                state.output_pos -= 1;
-            },
-            ui::Panel::Command => state.prev_from_history()
+            ui::Panel::Command => state.prev_from_history(),
+            _ => state.scroll_up()
         },
         _ => return app::Signal::Nop
     };
