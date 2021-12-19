@@ -1,6 +1,9 @@
 use std::io;
 
-use crossterm::terminal::{disable_raw_mode, enable_raw_mode};
+use crossterm::{
+    execute,
+    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
+};
 use tui::{backend::CrosstermBackend, Terminal};
 
 pub mod app;
@@ -17,11 +20,13 @@ fn main() {
     };
 }
 
+// TODO: Show actual help and usage
 fn show_help() {
     println!("HALP!");
 }
 
 fn run(filename: String) {
+    execute!(io::stdout(), EnterAlternateScreen).expect("Unable to enter alternate screen");
     let stdout = io::stdout();
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend).expect("Unable to bootstrap terminal");
@@ -36,6 +41,9 @@ fn run(filename: String) {
         match sig {
             app::Signal::Quit => {
                 disable_raw_mode().expect("Could not disable raw mode");
+                execute!(io::stdout(), LeaveAlternateScreen)
+                    .expect("Unable to leave alternate screen");
+                println!("jq '{}' {}", app.command, filename);
                 return;
             }
             _ => continue,
