@@ -11,21 +11,36 @@ use crossterm::{
 pub mod events;
 pub mod ui;
 pub mod app;
+pub mod opts;
 
 fn main() {
-    let filename = "./examples/generated.json";
+    match opts::Flags::get() {
+        opts::Flags::Help => {
+            show_help();
+            return;
+        },
+        opts::Flags::Filename(fname) => run(fname)
+    };
+}
 
+fn show_help() {
+    println!("HALP!");
+}
+
+fn run(filename: String) {
     let stdout = io::stdout();
     let backend = CrosstermBackend::new(stdout);
-    let mut terminal = Terminal::new(backend).expect("Unable to bootstrap terminal");
+    let mut terminal = Terminal::new(backend)
+        .expect("Unable to bootstrap terminal");
     let mut app: app::State = app::State::new(&filename);
 
-    enable_raw_mode();
+    enable_raw_mode().expect("Could not enable raw mode");
     loop {
-        terminal.draw(|frame| ui::draw(frame, &mut app));
+        terminal.draw(|frame| ui::draw(frame, &mut app))
+            .expect("Could not draw UI");
         let sig = events::handler(&mut app);
         match sig {
-            app::Signal::Quit => { disable_raw_mode(); return; },
+            app::Signal::Quit => { disable_raw_mode().expect("Could not disable raw mode"); return; },
             _ => continue,
         }
     };
