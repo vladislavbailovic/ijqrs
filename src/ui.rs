@@ -69,7 +69,11 @@ fn get_block(panel: &Panel, title: String, state: &app::State) -> Block<'static>
             Panel::Output => COLOR_FG_ACTIVE,
             _ => COLOR_FG,
         },
-        _ => COLOR_FG_ACTIVE
+        Panel::Command => match state.active_panel {
+            Panel::Command => COLOR_FG_ACTIVE,
+            _ => COLOR_FG,
+        },
+        _ => COLOR_FG
     };
     Block::default().title(String::from(" ") + &title + " ")
         .borders(Borders::ALL)

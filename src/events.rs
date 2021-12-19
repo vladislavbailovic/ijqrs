@@ -16,8 +16,9 @@ fn handle_key_event(key: KeyEvent, state: &mut app::State) -> app::Signal {
             modifiers: KeyModifiers::CONTROL
         } => {
             state.active_panel = match state.active_panel {
+                ui::Panel::Command => ui::Panel::Output,
                 ui::Panel::Output => ui::Panel::Source,
-                _ => ui::Panel::Output,
+                ui::Panel::Source => ui::Panel::Command
             };
             return app::Signal::Nop;
         },
