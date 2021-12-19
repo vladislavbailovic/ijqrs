@@ -27,7 +27,7 @@ impl State {
         let source = fs::read_to_string(filename)
             .expect("Error reading file");
         let command = String::from(".|keys");
-        let output = run_command(&command);
+        let output = run_command(&command, filename);
         State{
             filename: String::from(filename),
             command_history: vec![command.as_str().to_string()],
@@ -42,7 +42,7 @@ impl State {
     pub fn run_current_command(&mut self) {
         self.command_history.push(self.command.to_string());
         self.history_pos = self.command_history.len() - 1;
-        self.output = run_command(&self.command);
+        self.output = run_command(&self.command, self.filename.as_str());
     }
 
     pub fn prev_from_history(&mut self) {
@@ -94,14 +94,14 @@ impl State {
     }
 }
 
-fn run_command(command: &str) -> String {
+fn run_command(command: &str, filename: &str) -> String {
     let command = Command::new("jq")
             .arg(command)
-            .arg("./examples/generated.json")
+            .arg(filename)
             .output().expect("Command execution failed");
     let result = String::from_utf8(command.stdout).expect("Invalid stdout");
     if "" == result {
-        return String::from_utf8(command.stderr).expect("Invalid stdout");
+        return String::from_utf8(command.stderr).expect("Invalid stderr");
     }
     result
 }
