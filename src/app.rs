@@ -13,8 +13,8 @@ pub struct State {
     pub command: String,
     pub source: String,
     pub active_panel: ui::Panel,
+    pub filename: String,
 
-    filename: String,
     command_history: Vec<String>,
 
     source_pos: usize,
@@ -23,19 +23,23 @@ pub struct State {
 }
 
 impl State {
-    pub fn new(filename: &str) -> State {
+    pub fn from_file(filename: &str) -> State {
         let source = fs::read_to_string(filename).expect("Error reading file");
+        State::new(filename, &source)
+    }
+
+    fn new(filename: &str, source: &str) -> State {
         let command = String::from(".|keys");
         let output = run_command(&command, filename);
         State {
             filename: String::from(filename),
             command_history: vec![command.as_str().to_string()],
             active_panel: ui::Panel::Command,
+            source: String::from(source),
             source_pos: 0,
             output_pos: 0,
             command,
             output,
-            source,
 
             history_pos: 0,
         }

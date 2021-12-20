@@ -16,7 +16,10 @@ fn main() {
         opts::Flags::Help => {
             show_help();
         }
-        opts::Flags::Filename(fname) => run(fname),
+        opts::Flags::Filename(fname) => {
+            let mut app: app::State = app::State::from_file(&fname);
+            run(&mut app);
+        }
     };
 }
 
@@ -25,25 +28,24 @@ fn show_help() {
     println!("HALP!");
 }
 
-fn run(filename: String) {
+fn run(app: &mut app::State) {
     execute!(io::stdout(), EnterAlternateScreen).expect("Unable to enter alternate screen");
     let stdout = io::stdout();
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend).expect("Unable to bootstrap terminal");
-    let mut app: app::State = app::State::new(&filename);
 
     enable_raw_mode().expect("Could not enable raw mode");
     loop {
         terminal
-            .draw(|frame| ui::draw(frame, &mut app))
+            .draw(|frame| ui::draw(frame, app))
             .expect("Could not draw UI");
-        let sig = events::handler(&mut app);
+        let sig = events::handler(app);
         match sig {
             app::Signal::Quit => {
                 disable_raw_mode().expect("Could not disable raw mode");
                 execute!(io::stdout(), LeaveAlternateScreen)
                     .expect("Unable to leave alternate screen");
-                println!("jq '{}' {}", app.command, filename);
+                println!("jq '{}' {}", app.command, app.filename);
                 return;
             }
             _ => continue,
