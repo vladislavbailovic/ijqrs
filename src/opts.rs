@@ -2,6 +2,7 @@ use std::env;
 
 pub enum Flags {
     Filename(String),
+    Stdin,
     Help,
 }
 
@@ -9,7 +10,7 @@ impl Flags {
     pub fn get() -> Flags {
         let args: Vec<String> = env::args().collect();
         if args.len() < 2 {
-            return Flags::Help;
+            return Flags::Stdin;
         }
         match args[1].as_ref() {
             "-h" => Flags::Help,

@@ -15,7 +15,11 @@ fn main() {
     match opts::Flags::get() {
         opts::Flags::Help => {
             show_help();
-        }
+        },
+        opts::Flags::Stdin => {
+            let mut app: app::State = app::State::from_stdin();
+            run(&mut app);
+        },
         opts::Flags::Filename(fname) => {
             let mut app: app::State = app::State::from_file(&fname);
             run(&mut app);

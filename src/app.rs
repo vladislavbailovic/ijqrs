@@ -1,4 +1,4 @@
-use std::fs;
+use std::{fs, io::{self, BufRead}};
 use std::process::Command;
 
 use super::ui;
@@ -26,6 +26,13 @@ impl State {
     pub fn from_file(filename: &str) -> State {
         let source = fs::read_to_string(filename).expect("Error reading file");
         State::new(filename, &source)
+    }
+    pub fn from_stdin() -> State {
+        let mut source = String::from("");
+        for line in io::stdin().lock().lines() {
+            source += String::from(line.expect("IO Error")).as_str();
+        }
+        State::new("STDIN", &source)
     }
 
     fn new(filename: &str, source: &str) -> State {
@@ -101,6 +108,7 @@ impl State {
 }
 
 fn run_command(command: &str, filename: &str) -> String {
+    // TODO: allow for STDIN
     let command = Command::new("jq")
         .arg(command)
         .arg(filename)
