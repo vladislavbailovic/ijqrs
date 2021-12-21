@@ -17,9 +17,9 @@ pub struct State {
 
     command_history: Vec<String>,
 
-    source_pos: usize,
-    output_pos: usize,
-    history_pos: usize,
+    source_pos: ui::Scroller,
+    output_pos: ui::Scroller,
+    history_pos: ui::Scroller,
 }
 
 impl State {
@@ -38,45 +38,50 @@ impl State {
 
     fn new(filename: &str, source: &str) -> State {
         let command = String::from(".|keys");
+
+        let srclines: Vec<&str> = source.split("\n").collect();
+
         let output = run_command(&command, filename);
+        let outlines: Vec<&str> = output.split("\n").collect();
+
         State {
             filename: String::from(filename),
             command_history: vec![command.as_str().to_string()],
             active_panel: ui::Panel::Command,
             source: String::from(source),
-            source_pos: 0,
-            output_pos: 0,
             command,
-            output,
+            output: String::from(output.as_str()),
 
-            history_pos: 0,
+            source_pos: ui::Scroller::new(srclines.len()),
+            output_pos: ui::Scroller::new(outlines.len()),
+            history_pos: ui::Scroller::new(0),
         }
     }
 
     pub fn run_current_command(&mut self) {
         self.command_history.push(self.command.to_string());
-        self.history_pos = self.command_history.len() - 1;
-        self.output = run_command(&self.command, self.filename.as_str());
+        self.history_pos.set_max(self.command_history.len() - 1);
+
+        let output = run_command(&self.command, self.filename.as_str());
+        let outlines: Vec<&str> = output.split("\n").collect();
+        self.output = String::from(output.as_str());
+        self.output_pos.set_max(outlines.len());
     }
 
     pub fn prev_from_history(&mut self) {
-        if self.history_pos > 0 {
-            self.history_pos -= 1;
-            self.command = self.command_history[self.history_pos].as_str().to_string();
-        }
+        self.history_pos.prev();
+        self.command = self.command_history[self.history_pos.get()].as_str().to_string();
     }
 
     pub fn next_from_history(&mut self) {
-        if self.history_pos < self.command_history.len() - 1 {
-            self.history_pos += 1;
-            self.command = self.command_history[self.history_pos].as_str().to_string();
-        }
+        self.history_pos.next();
+        self.command = self.command_history[self.history_pos.get()].as_str().to_string();
     }
 
     pub fn scroll_down(&mut self) {
         match self.active_panel {
-            ui::Panel::Source => self.source_pos += 1,
-            ui::Panel::Output => self.output_pos += 1,
+            ui::Panel::Source => self.source_pos.next(),
+            ui::Panel::Output => self.output_pos.next(),
             _ => {}
         };
     }
@@ -84,14 +89,10 @@ impl State {
     pub fn scroll_up(&mut self) {
         match self.active_panel {
             ui::Panel::Source => {
-                if self.source_pos > 0 {
-                    self.source_pos -= 1;
-                }
+                self.source_pos.prev();
             }
             ui::Panel::Output => {
-                if self.output_pos > 0 {
-                    self.output_pos -= 1;
-                }
+                self.output_pos.prev();
             }
             _ => {}
         };
@@ -100,8 +101,8 @@ impl State {
     pub fn scroll_pos(&self, panel: ui::Panel) -> (u16, u16) {
         let x = 0;
         let y = match panel {
-            ui::Panel::Source => self.source_pos,
-            ui::Panel::Output => self.output_pos,
+            ui::Panel::Source => self.source_pos.get(),
+            ui::Panel::Output => self.output_pos.get(),
             _ => 0,
         };
         (y as u16, x)

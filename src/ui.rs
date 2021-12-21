@@ -74,3 +74,35 @@ fn get_block(panel: &Panel, title: String, state: &app::State) -> Block<'static>
         .borders(Borders::ALL)
         .style(Style::default().fg(fg).bg(COLOR_BG))
 }
+
+pub struct Scroller {
+    position: usize,
+    max: usize
+}
+impl Scroller {
+
+    pub fn new(max: usize) -> Scroller {
+        Scroller{ position: 0, max }
+    }
+
+    pub fn prev(&mut self) {
+        if self.position > 0 {
+            self.position -= 1;
+        }
+    }
+
+    pub fn next(&mut self) {
+        if self.position < self.max {
+            self.position += 1;
+        }
+    }
+
+    pub fn set_max(&mut self, max: usize) {
+        self.max = max;
+    }
+
+    pub fn get(&self) -> usize {
+        self.position
+    }
+
+}
