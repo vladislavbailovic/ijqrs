@@ -2,6 +2,7 @@ use std::{fs, io::{self, BufRead}};
 use std::process::Command;
 
 use super::ui;
+use super::ui::Pane;
 
 pub enum Signal {
     Quit,
@@ -9,16 +10,14 @@ pub enum Signal {
 }
 
 pub struct State {
-    pub output: String,
     pub command: String,
-    pub source: String,
+    pub output: ui::ContentPanel,
+    pub source: ui::ContentPanel,
     pub active_panel: ui::Panel,
     pub filename: String,
 
     command_history: Vec<String>,
 
-    source_pos: ui::Scroller,
-    output_pos: ui::Scroller,
     history_pos: ui::Scroller,
 }
 
@@ -38,22 +37,16 @@ impl State {
 
     fn new(filename: &str, source: &str) -> State {
         let command = String::from(".|keys");
-
-        let srclines: Vec<&str> = source.split("\n").collect();
-
         let output = run_command(&command, filename);
-        let outlines: Vec<&str> = output.split("\n").collect();
 
         State {
             filename: String::from(filename),
             command_history: vec![command.as_str().to_string()],
             active_panel: ui::Panel::Command,
-            source: String::from(source),
             command,
-            output: String::from(output.as_str()),
+            source: ui::ContentPanel::new(String::from(source)),
+            output: ui::ContentPanel::new(output),
 
-            source_pos: ui::Scroller::new(srclines.len()),
-            output_pos: ui::Scroller::new(outlines.len()),
             history_pos: ui::Scroller::new(0),
         }
     }
@@ -63,9 +56,7 @@ impl State {
         self.history_pos.set_max(self.command_history.len() - 1);
 
         let output = run_command(&self.command, self.filename.as_str());
-        let outlines: Vec<&str> = output.split("\n").collect();
-        self.output = String::from(output.as_str());
-        self.output_pos.set_max(outlines.len());
+        self.output = ui::ContentPanel::new(output);
     }
 
     pub fn prev_from_history(&mut self) {
@@ -80,8 +71,8 @@ impl State {
 
     pub fn scroll_down(&mut self) {
         match self.active_panel {
-            ui::Panel::Source => self.source_pos.next(),
-            ui::Panel::Output => self.output_pos.next(),
+            ui::Panel::Source => self.source.scroll_down(),
+            ui::Panel::Output => self.output.scroll_down(),
             _ => {}
         };
     }
@@ -89,10 +80,10 @@ impl State {
     pub fn scroll_up(&mut self) {
         match self.active_panel {
             ui::Panel::Source => {
-                self.source_pos.prev();
+                self.source.scroll_up();
             }
             ui::Panel::Output => {
-                self.output_pos.prev();
+                self.output.scroll_up();
             }
             _ => {}
         };
@@ -101,8 +92,8 @@ impl State {
     pub fn scroll_pos(&self, panel: ui::Panel) -> (u16, u16) {
         let x = 0;
         let y = match panel {
-            ui::Panel::Source => self.source_pos.get(),
-            ui::Panel::Output => self.output_pos.get(),
+            ui::Panel::Source => self.source.get_pos(),
+            ui::Panel::Output => self.output.get_pos(),
             _ => 0,
         };
         (y as u16, x)

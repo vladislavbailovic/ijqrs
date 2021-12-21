@@ -37,11 +37,11 @@ pub fn draw<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
         frame_size.height - vert_height,
     );
 
-    let source_output = Paragraph::new(state.source.as_str())
+    let source_output = Paragraph::new(state.source.get_content())
         .block(get_block(&Panel::Source, String::from("Source"), state))
         .scroll(state.scroll_pos(Panel::Source))
         .wrap(Wrap { trim: true });
-    let result_output = Paragraph::new(state.output.as_str())
+    let result_output = Paragraph::new(state.output.get_content())
         .block(get_block(&Panel::Output, String::from("Result"), state))
         .scroll(state.scroll_pos(Panel::Output))
         .wrap(Wrap { trim: true });
@@ -105,4 +105,34 @@ impl Scroller {
         self.position
     }
 
+}
+
+pub trait Pane {
+    fn scroll_up(&mut self);
+    fn scroll_down(&mut self);
+    fn get_pos(&self) -> u16;
+    fn get_content(&self) -> String;
+}
+
+pub struct ContentPanel {
+    scroll: Scroller,
+    content: String
+}
+impl ContentPanel {
+    pub fn new(content: String) -> ContentPanel {
+        let lines: Vec<&str> = content.split("\n").collect();
+        let s = Scroller::new(lines.len());
+        ContentPanel{
+            scroll: s,
+            content: String::from(content.as_str())
+        }
+    }
+}
+impl Pane for ContentPanel {
+    fn scroll_up(&mut self) { self.scroll.prev(); }
+    fn scroll_down(&mut self) { self.scroll.next(); }
+    fn get_pos(&self) -> u16 { self.scroll.get() as u16 }
+    fn get_content(&self) -> String {
+       self.content.as_str().to_string()
+    }
 }
