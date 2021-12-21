@@ -8,7 +8,7 @@ use tui::{
 
 use super::app;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Panel {
     Source,
     Output,
@@ -56,15 +56,15 @@ pub fn draw<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
 
 fn get_block(panel: &Panel, title: String, state: &app::State) -> Block<'static> {
     let fg: Color = match panel {
-        Panel::Source => match state.active_panel {
+        Panel::Source => match state.get_active().get_type() {
             Panel::Source => COLOR_FG_ACTIVE,
             _ => COLOR_FG,
         },
-        Panel::Output => match state.active_panel {
+        Panel::Output => match state.get_active().get_type() {
             Panel::Output => COLOR_FG_ACTIVE,
             _ => COLOR_FG,
         },
-        Panel::Command => match state.active_panel {
+        Panel::Command => match state.get_active().get_type() {
             Panel::Command => COLOR_FG_ACTIVE,
             _ => COLOR_FG,
         },
@@ -112,17 +112,20 @@ pub trait Pane {
     fn scroll_down(&mut self);
     fn get_pos(&self) -> u16;
     fn get_content(&self) -> String;
+    fn get_type(&self) -> &Panel;
 }
 
 pub struct ContentPanel {
+    kind: Panel,
     scroll: Scroller,
     content: String
 }
 impl ContentPanel {
-    pub fn new(content: String) -> ContentPanel {
+    pub fn new(content: String, kind: Panel) -> ContentPanel {
         let lines: Vec<&str> = content.split("\n").collect();
         let s = Scroller::new(lines.len());
         ContentPanel{
+            kind: kind,
             scroll: s,
             content: String::from(content.as_str())
         }
@@ -132,6 +135,7 @@ impl Pane for ContentPanel {
     fn scroll_up(&mut self) { self.scroll.prev(); }
     fn scroll_down(&mut self) { self.scroll.next(); }
     fn get_pos(&self) -> u16 { self.scroll.get() as u16 }
+    fn get_type(&self) -> &Panel { &self.kind }
     fn get_content(&self) -> String {
        self.content.as_str().to_string()
     }
@@ -172,7 +176,8 @@ impl CommandPanel {
 
     pub fn record(&mut self) {
         self.history.push(self.command.to_string());
-        self.scroll.set_max(self.history.len());
+        self.scroll.set_max(self.history.len() - 1);
+        self.scroll.position = self.scroll.max;
     }
 }
 impl Pane for CommandPanel {
@@ -180,6 +185,7 @@ impl Pane for CommandPanel {
     fn get_content(&self) -> String {
        self.command.as_str().to_string()
     }
-    fn scroll_up(&mut self) { self.scroll.prev(); }
-    fn scroll_down(&mut self) { self.scroll.next(); }
+    fn get_type(&self) -> &Panel { &Panel::Command }
+    fn scroll_up(&mut self) { self.prev_from_history(); }
+    fn scroll_down(&mut self) { self.next_from_history(); }
 }

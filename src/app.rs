@@ -13,9 +13,9 @@ pub struct State {
     pub command: ui::CommandPanel,
     pub output: ui::ContentPanel,
     pub source: ui::ContentPanel,
-
-    pub active_panel: ui::Panel,
     pub filename: String,
+
+    active: ui::Panel
 }
 
 impl State {
@@ -38,45 +38,42 @@ impl State {
 
         State {
             filename: String::from(filename),
-            active_panel: ui::Panel::Command,
             command,
-            source: ui::ContentPanel::new(String::from(source)),
-            output: ui::ContentPanel::new(output),
+            source: ui::ContentPanel::new(String::from(source), ui::Panel::Source),
+            output: ui::ContentPanel::new(output, ui::Panel::Output),
+
+            active: ui::Panel::Command,
         }
+    }
+
+    pub fn get_mut_active(&mut self) -> Box<&mut dyn ui::Pane> {
+        if ui::Panel::Source == self.active {
+            return Box::new(&mut self.source);
+        }
+        if ui::Panel::Output == self.active {
+            return Box::new(&mut self.output);
+        }
+        Box::new(&mut self.command)
+    }
+
+    pub fn get_active(&self) -> Box<&dyn ui::Pane> {
+        if ui::Panel::Source == self.active {
+            return Box::new(&self.source);
+        }
+        if ui::Panel::Output == self.active {
+            return Box::new(&self.output);
+        }
+        Box::new(&self.command)
+    }
+
+    pub fn set_active(&mut self, active: ui::Panel) {
+        self.active = active;
     }
 
     pub fn run_current_command(&mut self) {
         self.command.record();
         let output = run_command(&self.command.get_content(), self.filename.as_str());
-        self.output = ui::ContentPanel::new(output);
-    }
-
-    pub fn prev_from_history(&mut self) {
-        self.command.prev_from_history();
-    }
-
-    pub fn next_from_history(&mut self) {
-        self.command.next_from_history();
-    }
-
-    pub fn scroll_down(&mut self) {
-        match self.active_panel {
-            ui::Panel::Source => self.source.scroll_down(),
-            ui::Panel::Output => self.output.scroll_down(),
-            _ => {}
-        };
-    }
-
-    pub fn scroll_up(&mut self) {
-        match self.active_panel {
-            ui::Panel::Source => {
-                self.source.scroll_up();
-            }
-            ui::Panel::Output => {
-                self.output.scroll_up();
-            }
-            _ => {}
-        };
+        self.output = ui::ContentPanel::new(output, ui::Panel::Output);
     }
 
     pub fn scroll_pos(&self, panel: ui::Panel) -> (u16, u16) {
