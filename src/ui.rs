@@ -45,7 +45,7 @@ pub fn draw<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
         .block(get_block(&Panel::Output, String::from("Result"), state))
         .scroll(state.scroll_pos(Panel::Output))
         .wrap(Wrap { trim: true });
-    let cmd_output = Paragraph::new(state.command.as_str())
+    let cmd_output = Paragraph::new(state.command.get_content())
         .block(get_block(&Panel::Command, String::from("Command"), state))
         .wrap(Wrap { trim: true });
 
@@ -135,4 +135,51 @@ impl Pane for ContentPanel {
     fn get_content(&self) -> String {
        self.content.as_str().to_string()
     }
+}
+
+pub struct CommandPanel {
+    scroll: Scroller,
+    history: Vec<String>,
+    command: String
+}
+impl CommandPanel {
+    pub fn new(command: String) -> CommandPanel{
+        let s = Scroller::new(0);
+        CommandPanel{
+            scroll: s,
+            history: vec![command.as_str().to_string()],
+            command: command
+        }
+    }
+
+    pub fn prev_from_history(&mut self) {
+        self.scroll.prev();
+        self.command = self.history[self.scroll.get()].as_str().to_string();
+    }
+
+    pub fn next_from_history(&mut self) {
+        self.scroll.next();
+        self.command = self.history[self.scroll.get()].as_str().to_string();
+    }
+
+    pub fn push(&mut self, c: char) {
+        self.command.push(c);
+    }
+
+    pub fn pop(&mut self) {
+        self.command.pop();
+    }
+
+    pub fn record(&mut self) {
+        self.history.push(self.command.to_string());
+        self.scroll.set_max(self.history.len());
+    }
+}
+impl Pane for CommandPanel {
+    fn get_pos(&self) -> u16 { self.scroll.get() as u16 }
+    fn get_content(&self) -> String {
+       self.command.as_str().to_string()
+    }
+    fn scroll_up(&mut self) { self.scroll.prev(); }
+    fn scroll_down(&mut self) { self.scroll.next(); }
 }

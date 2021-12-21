@@ -10,15 +10,12 @@ pub enum Signal {
 }
 
 pub struct State {
-    pub command: String,
+    pub command: ui::CommandPanel,
     pub output: ui::ContentPanel,
     pub source: ui::ContentPanel,
+
     pub active_panel: ui::Panel,
     pub filename: String,
-
-    command_history: Vec<String>,
-
-    history_pos: ui::Scroller,
 }
 
 impl State {
@@ -36,37 +33,30 @@ impl State {
     }
 
     fn new(filename: &str, source: &str) -> State {
-        let command = String::from(".|keys");
-        let output = run_command(&command, filename);
+        let command = ui::CommandPanel::new(String::from(".|keys"));
+        let output = run_command(&command.get_content(), filename);
 
         State {
             filename: String::from(filename),
-            command_history: vec![command.as_str().to_string()],
             active_panel: ui::Panel::Command,
             command,
             source: ui::ContentPanel::new(String::from(source)),
             output: ui::ContentPanel::new(output),
-
-            history_pos: ui::Scroller::new(0),
         }
     }
 
     pub fn run_current_command(&mut self) {
-        self.command_history.push(self.command.to_string());
-        self.history_pos.set_max(self.command_history.len() - 1);
-
-        let output = run_command(&self.command, self.filename.as_str());
+        self.command.record();
+        let output = run_command(&self.command.get_content(), self.filename.as_str());
         self.output = ui::ContentPanel::new(output);
     }
 
     pub fn prev_from_history(&mut self) {
-        self.history_pos.prev();
-        self.command = self.command_history[self.history_pos.get()].as_str().to_string();
+        self.command.prev_from_history();
     }
 
     pub fn next_from_history(&mut self) {
-        self.history_pos.next();
-        self.command = self.command_history[self.history_pos.get()].as_str().to_string();
+        self.command.next_from_history();
     }
 
     pub fn scroll_down(&mut self) {
