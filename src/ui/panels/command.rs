@@ -29,6 +29,10 @@ impl Command {
         self.command = self.history[self.scroll.get()].as_str().to_string();
     }
 
+    pub fn clear(&mut self) {
+        self.command = String::from("");
+    }
+
     pub fn push(&mut self, c: char) {
         self.command.push(c);
     }

@@ -6,6 +6,7 @@ use crossterm::{
 };
 use tui::{backend::CrosstermBackend, Terminal};
 
+pub mod actions;
 pub mod app;
 pub mod events;
 pub mod opts;

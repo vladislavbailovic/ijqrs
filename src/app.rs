@@ -1,6 +1,6 @@
 use std::{fs, io::{self, BufRead}};
-use std::process::Command;
 
+use super::actions;
 use super::ui;
 use super::ui::Pane;
 
@@ -43,7 +43,7 @@ impl State {
 
     fn new(filename: &str, source: &str) -> State {
         let command = ui::panels::Command::new(String::from(".|keys"));
-        let output = run_command(&command.get_content(), filename);
+        let output = actions::run_command(&command.get_content(), filename);
 
         State {
             filename: String::from(filename),
@@ -82,7 +82,10 @@ impl State {
         if ui::Panel::Output == self.active {
             return Box::new(&mut self.output);
         }
-        Box::new(&mut self.command)
+        match self.mode {
+            Mode::Shell => Box::new(&mut self.command),
+            Mode::Internal => Box::new(&mut self.internal),
+        }
     }
 
     pub fn get_active(&self) -> Box<&dyn ui::Pane> {
@@ -92,7 +95,7 @@ impl State {
         if ui::Panel::Output == self.active {
             return Box::new(&self.output);
         }
-        Box::new(&self.command)
+        Box::new(self.command())
     }
 
     pub fn set_active(&mut self, active: ui::Panel) {
@@ -100,8 +103,22 @@ impl State {
     }
 
     pub fn run_current_command(&mut self) {
+        match self.mode {
+            Mode::Shell => self.run_shell_command(),
+            Mode::Internal => self.run_internal_command(),
+        }
+    }
+
+    pub fn run_internal_command(&mut self) {
+        self.internal.record();
+        let out = actions::run_internal(&self.internal.get_content(), self.filename.as_str());
+        println!("{}", out);
+        self.internal.clear();
+    }
+
+    pub fn run_shell_command(&mut self) {
         self.command.record();
-        let output = run_command(&self.command.get_content(), self.filename.as_str());
+        let output = actions::run_command(&self.command.get_content(), self.filename.as_str());
         self.output = ui::panels::Content::new(output, ui::Panel::Output);
     }
 
@@ -114,19 +131,6 @@ impl State {
         };
         (y as u16, x)
     }
-}
-
-fn run_command(command: &str, filename: &str) -> String {
-    let command = Command::new("jq")
-        .arg(command)
-        .arg(filename)
-        .output()
-        .expect("Command execution failed");
-    let result = String::from_utf8(command.stdout).expect("Invalid stdout");
-    if result.is_empty() {
-        return String::from_utf8(command.stderr).expect("Invalid stderr");
-    }
-    result
 }
 
 use std::env;
