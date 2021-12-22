@@ -11,9 +11,9 @@ pub enum Signal {
 }
 
 pub struct State {
-    pub command: ui::CommandPanel,
-    pub output: ui::ContentPanel,
-    pub source: ui::ContentPanel,
+    pub command: ui::panels::Command,
+    pub output: ui::panels::Content,
+    pub source: ui::panels::Content,
     pub filename: String,
 
     active: ui::Panel
@@ -34,14 +34,14 @@ impl State {
     }
 
     fn new(filename: &str, source: &str) -> State {
-        let command = ui::CommandPanel::new(String::from(".|keys"));
+        let command = ui::panels::Command::new(String::from(".|keys"));
         let output = run_command(&command.get_content(), filename);
 
         State {
             filename: String::from(filename),
             command,
-            source: ui::ContentPanel::new(String::from(source), ui::Panel::Source),
-            output: ui::ContentPanel::new(output, ui::Panel::Output),
+            source: ui::panels::Content::new(String::from(source), ui::Panel::Source),
+            output: ui::panels::Content::new(output, ui::Panel::Output),
 
             active: ui::Panel::Command,
         }
@@ -74,7 +74,7 @@ impl State {
     pub fn run_current_command(&mut self) {
         self.command.record();
         let output = run_command(&self.command.get_content(), self.filename.as_str());
-        self.output = ui::ContentPanel::new(output, ui::Panel::Output);
+        self.output = ui::panels::Content::new(output, ui::Panel::Output);
     }
 
     pub fn scroll_pos(&self, panel: ui::Panel) -> (u16, u16) {
