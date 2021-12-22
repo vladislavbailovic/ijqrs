@@ -23,6 +23,11 @@ fn handle_key_event(key: KeyEvent, state: &mut app::State) -> app::Signal {
         },
         KeyEvent { code, modifiers } => {
             match code {
+                KeyCode::Esc => {
+                    state.switch_mode();
+                    state.set_active(ui::Panel::Command);
+                    return app::Signal::Mode;
+                },
                 KeyCode::Down => {
                     state.get_mut_active().scroll_down();
                     return app::Signal::Nop;

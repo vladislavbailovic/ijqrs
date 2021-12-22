@@ -61,8 +61,11 @@ impl State {
         &self.mode
     }
 
-    pub fn set_mode(&mut self, mode: Mode) {
-        self.mode = mode;
+    pub fn switch_mode(&mut self) {
+        match self.mode {
+            Mode::Shell => self.mode = Mode::Internal,
+            Mode::Internal => self.mode = Mode::Shell,
+        };
     }
 
     pub fn command(&self) -> &ui::panels::Command {
