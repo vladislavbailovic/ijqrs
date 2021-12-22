@@ -1,5 +1,3 @@
-use std::process::Command;
-
 use super::app;
 use super::ui::Pane;
 
@@ -28,6 +26,8 @@ pub fn run_internal(command: &str, state: &app::State) -> String {
     };
     return String::from("internal");
 }
+
+use std::process::Command;
 
 pub fn run_command(command: &str, filename: &str) -> String {
     let command = Command::new("jq")

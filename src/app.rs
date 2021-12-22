@@ -115,6 +115,7 @@ impl State {
 
     pub fn run_internal_command(&mut self) {
         self.internal.record();
+        // TODO: somehow indicate internal command output and/or status
         actions::run_internal(&self.internal.get_content(), &self);
         self.internal.clear();
     }
