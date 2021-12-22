@@ -8,6 +8,7 @@ pub struct Command {
     history: Vec<String>,
     command: String
 }
+
 impl Command {
     pub fn new(command: String) -> Command{
         let s = Scroller::new(0);
@@ -42,6 +43,7 @@ impl Command {
         self.scroll.set_position(self.scroll.max());
     }
 }
+
 impl ui::Pane for Command {
     fn get_pos(&self) -> u16 { self.scroll.get() as u16 }
     fn get_content(&self) -> String {

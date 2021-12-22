@@ -2,6 +2,7 @@ pub struct Scroller {
     position: usize,
     max: usize
 }
+
 impl Scroller {
 
     pub fn new(max: usize) -> Scroller {
@@ -20,16 +21,18 @@ impl Scroller {
         }
     }
 
-    pub fn max(&self) -> usize {
-        self.max
-    }
-
     pub fn set_max(&mut self, max: usize) {
         self.max = max;
     }
 
     pub fn set_position(&mut self, pos: usize) {
-        self.position = pos;
+        if pos <= self.max {
+            self.position = pos;
+        }
+    }
+
+    pub fn max(&self) -> usize {
+        self.max
     }
 
     pub fn get(&self) -> usize {
