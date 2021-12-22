@@ -8,15 +8,23 @@ pub enum Signal {
     Quit,
     Nop,
     Run,
+    Mode,
+}
+
+pub enum Mode {
+    Internal,
+    Shell,
 }
 
 pub struct State {
-    pub command: ui::panels::Command,
     pub output: ui::panels::Content,
     pub source: ui::panels::Content,
     pub filename: String,
 
-    active: ui::Panel
+    command: ui::panels::Command,
+    internal: ui::panels::Command,
+    active: ui::Panel,
+    mode: Mode,
 }
 
 impl State {
@@ -39,11 +47,28 @@ impl State {
 
         State {
             filename: String::from(filename),
-            command,
             source: ui::panels::Content::new(String::from(source), ui::Panel::Source),
             output: ui::panels::Content::new(output, ui::Panel::Output),
 
+            command,
+            internal: ui::panels::Command::new(String::from("")),
             active: ui::Panel::Command,
+            mode: Mode::Shell,
+        }
+    }
+
+    pub fn mode(&self) -> &Mode {
+        &self.mode
+    }
+
+    pub fn set_mode(&mut self, mode: Mode) {
+        self.mode = mode;
+    }
+
+    pub fn command(&self) -> &ui::panels::Command {
+        match self.mode {
+            Mode::Shell => &self.command,
+            Mode::Internal => &self.internal,
         }
     }
 
