@@ -75,6 +75,10 @@ impl State {
         }
     }
 
+    pub fn jq(&self) -> &ui::panels::Command {
+        &self.command
+    }
+
     pub fn get_mut_active(&mut self) -> Box<&mut dyn ui::Pane> {
         if ui::Panel::Source == self.active {
             return Box::new(&mut self.source);
@@ -111,8 +115,7 @@ impl State {
 
     pub fn run_internal_command(&mut self) {
         self.internal.record();
-        let out = actions::run_internal(&self.internal.get_content(), self.filename.as_str());
-        println!("{}", out);
+        actions::run_internal(&self.internal.get_content(), &self);
         self.internal.clear();
     }
 

@@ -1,6 +1,31 @@
 use std::process::Command;
 
-pub fn run_internal(command: &str, filename: &str) -> String {
+use super::app;
+use super::ui::Pane;
+
+pub fn run_internal(command: &str, state: &app::State) -> String {
+    let cmd: Vec<&str> = command.split(' ').collect();
+    match cmd[0] {
+        "w" => {
+            let mut fname = "ijqrs.out";
+            if cmd.len() > 1 {
+                fname = cmd[1];
+            }
+            let fname = fname;
+            let out = state.output.get_content();
+            return write_file(&fname, out.as_str());
+        },
+        "wc" => {
+            let mut fname = "ijqrs.cmd";
+            if cmd.len() > 1 {
+                fname = cmd[1];
+            }
+            let fname = fname;
+            let out = state.jq().get_content();
+            return write_file(&fname, out.as_str());
+        },
+        _ => println!("Unknown command!"),
+    };
     return String::from("internal");
 }
 
@@ -17,3 +42,15 @@ pub fn run_command(command: &str, filename: &str) -> String {
     result
 }
 
+use std::env;
+use std::fs::File;
+use std::io::Write;
+
+fn write_file(fname: &str, content: &str) -> String {
+    let mut cwd = env::current_dir().expect("Error resolving cwd");
+    cwd.push(fname);
+    let path = cwd.to_str().expect("Error resolving cwd file path");
+    let mut file = File::create(path).expect("Error creating file");
+    file.write_all(content.as_bytes());
+    String::from(path)
+}
