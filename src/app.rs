@@ -7,6 +7,7 @@ use super::ui::Pane;
 pub enum Signal {
     Quit,
     Nop,
+    Run,
 }
 
 pub struct State {

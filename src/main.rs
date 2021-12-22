@@ -53,7 +53,10 @@ fn run(app: &mut app::State) {
                     .expect("Unable to leave alternate screen");
                 println!("jq '{}' {}", app.command.get_content(), app.filename);
                 return;
-            }
+            },
+            app::Signal::Run => {
+                app.run_current_command();
+            },
             _ => continue,
         }
     }

@@ -5,6 +5,7 @@ use tui::{
     widgets::{Block, Borders, Paragraph, Wrap},
     Frame,
 };
+use crossterm::event::{KeyCode, KeyModifiers};
 
 use super::app;
 
@@ -113,6 +114,7 @@ pub trait Pane {
     fn get_pos(&self) -> u16;
     fn get_content(&self) -> String;
     fn get_type(&self) -> &Panel;
+    fn handle_event(&mut self, code: KeyCode, modifiers: KeyModifiers) -> app::Signal;
 }
 
 pub struct ContentPanel {
@@ -138,6 +140,9 @@ impl Pane for ContentPanel {
     fn get_type(&self) -> &Panel { &self.kind }
     fn get_content(&self) -> String {
        self.content.as_str().to_string()
+    }
+    fn handle_event(&mut self, _code: KeyCode, _modifiers: KeyModifiers) -> app::Signal {
+        app::Signal::Nop
     }
 }
 
@@ -188,4 +193,20 @@ impl Pane for CommandPanel {
     fn get_type(&self) -> &Panel { &Panel::Command }
     fn scroll_up(&mut self) { self.prev_from_history(); }
     fn scroll_down(&mut self) { self.next_from_history(); }
+
+    fn handle_event(&mut self, code: KeyCode, _modifiers: KeyModifiers) -> app::Signal {
+        match code {
+            KeyCode::Char(c) => {
+                self.command.push(c);
+            },
+            KeyCode::Backspace => {
+                self.command.pop();
+            },
+            KeyCode::Enter => {
+                return app::Signal::Run;
+            },
+            _ => return app::Signal::Nop,
+        };
+        app::Signal::Nop
+    }
 }

@@ -20,27 +20,21 @@ fn handle_key_event(key: KeyEvent, state: &mut app::State) -> app::Signal {
             };
             state.set_active(active);
             app::Signal::Nop
+        },
+        KeyEvent { code, modifiers } => {
+            match code {
+                KeyCode::Down => {
+                    state.get_mut_active().scroll_down();
+                    return app::Signal::Nop;
+                },
+                KeyCode::Up => {
+                    state.get_mut_active().scroll_up();
+                    return app::Signal::Nop;
+                },
+                _ => state.get_mut_active().handle_event(code, modifiers),
+            }
         }
-        KeyEvent { code, modifiers } => handle_key_code(code, modifiers, state),
     }
-}
-
-fn handle_key_code(code: KeyCode, modifiers: KeyModifiers, state: &mut app::State) -> app::Signal {
-    match code {
-        KeyCode::Char(c) => {
-            state.command.push(c);
-        }
-        KeyCode::Backspace => {
-            state.command.pop();
-        }
-        KeyCode::Enter => {
-            state.run_current_command();
-        }
-        KeyCode::Down => state.get_mut_active().scroll_down(),
-        KeyCode::Up => state.get_mut_active().scroll_up(),
-        _ => return app::Signal::Nop,
-    };
-    app::Signal::Nop
 }
 
 pub fn handler(state: &mut app::State) -> app::Signal {
