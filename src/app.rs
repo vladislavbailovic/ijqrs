@@ -37,7 +37,7 @@ impl State {
         for line in io::stdin().lock().lines() {
             source += (String::from(line.expect("IO Error")) + "\n").as_str();
         }
-        let filename = write_temp(&source);
+        let filename = actions::write_temp(&source);
         State::new(&filename, &source)
     }
 
@@ -134,21 +134,4 @@ impl State {
         };
         (y as u16, x)
     }
-}
-
-use std::env;
-use std::time::{SystemTime, UNIX_EPOCH};
-use std::fs::File;
-use std::io::Write;
-
-fn write_temp(source: &str) -> String {
-    let mut tmp = env::temp_dir();
-    let now = SystemTime::now().duration_since(UNIX_EPOCH).expect("Error figuring out current time");
-    let fname = format!("ijqrs-{}.json", now.as_nanos());
-    tmp.push(fname);
-    let path = tmp.to_str().expect("Error getting temporary file path");
-
-    let mut file = File::create(path).expect("Error creating temp file");
-    file.write_all(source.as_bytes());
-    return String::from(path);
 }

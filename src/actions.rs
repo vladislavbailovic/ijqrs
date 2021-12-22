@@ -51,6 +51,20 @@ fn write_file(fname: &str, content: &str) -> String {
     cwd.push(fname);
     let path = cwd.to_str().expect("Error resolving cwd file path");
     let mut file = File::create(path).expect("Error creating file");
-    file.write_all(content.as_bytes());
+    file.write_all(content.as_bytes()).expect("Error writing file!");
     String::from(path)
+}
+
+use std::time::{SystemTime, UNIX_EPOCH};
+
+pub fn write_temp(source: &str) -> String {
+    let mut tmp = env::temp_dir();
+    let now = SystemTime::now().duration_since(UNIX_EPOCH).expect("Error figuring out current time");
+    let fname = format!("ijqrs-{}.json", now.as_nanos());
+    tmp.push(fname);
+    let path = tmp.to_str().expect("Error getting temporary file path");
+
+    let mut file = File::create(path).expect("Error creating temp file");
+    file.write_all(source.as_bytes()).expect("Error writing file!");
+    return String::from(path);
 }
