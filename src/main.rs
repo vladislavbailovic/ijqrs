@@ -12,8 +12,6 @@ pub mod events;
 pub mod opts;
 pub mod ui;
 
-use ui::Pane;
-
 fn main() {
     match opts::Flags::get() {
         opts::Flags::Help => {
@@ -52,7 +50,6 @@ fn run(app: &mut app::State) {
                 disable_raw_mode().expect("Could not disable raw mode");
                 execute!(io::stdout(), LeaveAlternateScreen)
                     .expect("Unable to leave alternate screen");
-                println!("jq '{}' {}", app.command().get_content(), app.filename);
                 return;
             },
             app::Signal::Run => {
