@@ -9,19 +9,19 @@ use tui::{backend::CrosstermBackend, Terminal};
 pub mod actions;
 pub mod app;
 pub mod events;
+pub mod help;
 pub mod opts;
 pub mod ui;
-pub mod help;
 
 fn main() {
     match opts::Flags::get() {
         opts::Flags::Help => {
             show_help();
-        },
+        }
         opts::Flags::Stdin => {
             let mut app: app::State = app::State::from_stdin();
             run(&mut app);
-        },
+        }
         opts::Flags::Filename(fname) => {
             let mut app: app::State = app::State::from_file(&fname);
             run(&mut app);
@@ -51,10 +51,10 @@ fn run(app: &mut app::State) {
                 execute!(io::stdout(), LeaveAlternateScreen)
                     .expect("Unable to leave alternate screen");
                 return;
-            },
+            }
             app::Signal::Run => {
                 app.run_current_command();
-            },
+            }
             app::Signal::Nop => continue,
         }
     }

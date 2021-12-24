@@ -1,12 +1,11 @@
 pub struct Scroller {
     position: usize,
-    max: usize
+    max: usize,
 }
 
 impl Scroller {
-
     pub fn new(max: usize) -> Scroller {
-        Scroller{ position: 0, max }
+        Scroller { position: 0, max }
     }
 
     pub fn prev(&mut self) {
@@ -41,6 +40,4 @@ impl Scroller {
     pub fn get(&self) -> usize {
         self.position
     }
-
 }
-

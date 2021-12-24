@@ -1,5 +1,5 @@
+use super::super::super::{app, ui};
 use crossterm::event::{KeyCode, KeyModifiers};
-use super::super::super::{app,ui};
 
 use super::Scroller;
 
@@ -13,12 +13,12 @@ pub struct Command {
 }
 
 impl Command {
-    pub fn new(command: String) -> Command{
+    pub fn new(command: String) -> Command {
         let s = Scroller::new(0);
         let mut c = Scroller::new(0);
         c.set_max(command.len());
         c.set_position(command.len());
-        Command{
+        Command {
             scroll: s,
             cursor: c,
             history: vec![command.as_str().to_string()],
@@ -124,46 +124,53 @@ impl Command {
 }
 
 impl ui::Pane for Command {
-    fn get_pos(&self) -> u16 { self.scroll.get() as u16 }
+    fn get_pos(&self) -> u16 {
+        self.scroll.get() as u16
+    }
     fn get_content(&self) -> String {
         match self.status {
             app::Status::Error => self.output.as_str().to_string(),
             app::Status::Ok => self.command.as_str().to_string(),
         }
     }
-    fn get_type(&self) -> &ui::Panel { &ui::Panel::Command }
-    fn scroll_up(&mut self) { self.prev_from_history(); }
-    fn scroll_down(&mut self) { self.next_from_history(); }
+    fn get_type(&self) -> &ui::Panel {
+        &ui::Panel::Command
+    }
+    fn scroll_up(&mut self) {
+        self.prev_from_history();
+    }
+    fn scroll_down(&mut self) {
+        self.next_from_history();
+    }
 
     fn handle_event(&mut self, code: KeyCode, _modifiers: KeyModifiers) -> app::Signal {
         match code {
             KeyCode::Char(c) => {
                 self.push(c);
-            },
+            }
             KeyCode::Backspace => {
                 self.backspace();
-            },
+            }
             KeyCode::Delete => {
                 self.delete();
-            },
+            }
             KeyCode::Enter => {
                 return app::Signal::Run;
-            },
+            }
             KeyCode::Left => {
                 self.cursor.prev();
-            },
+            }
             KeyCode::Home => {
                 self.cursor.set_position(0);
-            },
+            }
             KeyCode::Right => {
                 self.cursor.next();
-            },
+            }
             KeyCode::End => {
                 self.tail_cursor();
-            },
+            }
             _ => return app::Signal::Nop,
         };
         app::Signal::Nop
     }
 }
-

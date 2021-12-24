@@ -10,7 +10,6 @@ pub fn global_keys() -> HashMap<&'static str, &'static str> {
     ])
 }
 
-
 use super::app;
 use super::ui;
 
@@ -32,29 +31,27 @@ fn handle_key_event(key: KeyEvent, state: &mut app::State) -> app::Signal {
             };
             state.set_active(active);
             app::Signal::Nop
-        },
-        KeyEvent { code, modifiers } => {
-            match code {
-                KeyCode::Esc => {
-                    state.switch_mode();
-                    state.set_active(ui::Panel::Command);
-                    return app::Signal::Nop;
-                },
-                KeyCode::Char('?') => {
-                    state.set_mode(app::Mode::Help);
-                    return app::Signal::Nop;
-                },
-                KeyCode::Down => {
-                    state.get_mut_active().scroll_down();
-                    return app::Signal::Nop;
-                },
-                KeyCode::Up => {
-                    state.get_mut_active().scroll_up();
-                    return app::Signal::Nop;
-                },
-                _ => state.get_mut_active().handle_event(code, modifiers),
-            }
         }
+        KeyEvent { code, modifiers } => match code {
+            KeyCode::Esc => {
+                state.switch_mode();
+                state.set_active(ui::Panel::Command);
+                return app::Signal::Nop;
+            }
+            KeyCode::Char('?') => {
+                state.set_mode(app::Mode::Help);
+                return app::Signal::Nop;
+            }
+            KeyCode::Down => {
+                state.get_mut_active().scroll_down();
+                return app::Signal::Nop;
+            }
+            KeyCode::Up => {
+                state.get_mut_active().scroll_up();
+                return app::Signal::Nop;
+            }
+            _ => state.get_mut_active().handle_event(code, modifiers),
+        },
     }
 }
 

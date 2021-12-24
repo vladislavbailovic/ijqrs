@@ -1,4 +1,7 @@
-use std::{fs, io::{self, BufRead}};
+use std::{
+    fs,
+    io::{self, BufRead},
+};
 
 use super::actions;
 use super::ui;
@@ -123,7 +126,7 @@ impl State {
         match self.mode {
             Mode::Shell => self.run_shell_command(),
             Mode::Internal => self.run_internal_command(),
-            Mode::Help => ()
+            Mode::Help => (),
         }
     }
 
@@ -141,7 +144,7 @@ impl State {
         self.command.record();
         let output = match actions::run_internal(actions::RUN, &self) {
             Ok(result) => result,
-            Err(result) => result
+            Err(result) => result,
         };
         self.output = ui::panels::Content::new(output, ui::Panel::Output);
     }

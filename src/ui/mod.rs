@@ -1,13 +1,13 @@
+use super::{app, help};
+use crossterm::event::{KeyCode, KeyModifiers};
 use tui::{
     backend::Backend,
     layout::Rect,
     style::{Color, Style},
-    widgets::{Block, Borders, Paragraph, Wrap},
     text::{Span, Spans},
+    widgets::{Block, Borders, Paragraph, Wrap},
     Frame,
 };
-use crossterm::event::{KeyCode, KeyModifiers};
-use super::{app,help};
 
 pub mod panels;
 pub mod scroller;
@@ -38,7 +38,7 @@ const COLOR_FG_ACTIVE: Color = Color::White;
 pub fn draw<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
     match state.mode() {
         app::Mode::Help => draw_help(frame, state),
-        _ => draw_app(frame, state)
+        _ => draw_app(frame, state),
     }
 }
 
@@ -87,7 +87,7 @@ pub fn draw_app<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
         cmd += "_";
     }
     let mut editable = Vec::new();
-    for (idx,c) in cmd.chars().enumerate() {
+    for (idx, c) in cmd.chars().enumerate() {
         let mut style = Style::default();
         if idx == cursor {
             style = style.bg(COLOR_FG).fg(COLOR_BG);

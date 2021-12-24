@@ -1,5 +1,5 @@
-use super::{app, write_file};
 use super::super::ui::Pane;
+use super::{app, write_file};
 
 const OUTFILE_CMD: &str = "ijqrs.cmd";
 const OUTFILE_OUT: &str = "ijqrs.out";
@@ -15,10 +15,10 @@ pub enum Instruction {
 
 pub fn new(inst: Instruction, param: String) -> Box<dyn Instr> {
     match inst {
-        Instruction::Jq => Box::new(Jq{}),
-        Instruction::WriteOut => Box::new(WriteOut{ param }),
-        Instruction::WriteCmd => Box::new(WriteCmd{ param }),
-        Instruction::Unknown => Box::new(Unknown{ param }),
+        Instruction::Jq => Box::new(Jq {}),
+        Instruction::WriteOut => Box::new(WriteOut { param }),
+        Instruction::WriteCmd => Box::new(WriteCmd { param }),
+        Instruction::Unknown => Box::new(Unknown { param }),
     }
 }
 
@@ -41,7 +41,10 @@ pub trait InstrWrite {
     }
 }
 
-impl<T> Instr for T where T: InstrWrite {
+impl<T> Instr for T
+where
+    T: InstrWrite,
+{
     fn eval(&self, state: &app::State) -> Result<String, String> {
         self.write(state)
     }
