@@ -5,6 +5,7 @@ use super::Scroller;
 
 pub struct Command {
     scroll: Scroller,
+    cursor: Scroller,
     history: Vec<String>,
     command: String,
     output: String,
@@ -14,8 +15,12 @@ pub struct Command {
 impl Command {
     pub fn new(command: String) -> Command{
         let s = Scroller::new(0);
+        let mut c = Scroller::new(0);
+        c.set_max(command.len());
+        c.set_position(command.len());
         Command{
             scroll: s,
+            cursor: c,
             history: vec![command.as_str().to_string()],
             command: command,
             output: String::from(""),
@@ -42,7 +47,22 @@ impl Command {
             app::Status::Error => self.set_output(""),
             app::Status::Ok => (),
         };
-        self.command.push(c);
+        let cur = self.cursor.get();
+        if cur == self.command.len() {
+            self.command.push(c);
+            self.tail_cursor();
+        } else {
+            let mut newcmd = String::from("");
+            for (idx, old) in self.command.chars().enumerate() {
+                if idx == cur {
+                    newcmd += String::from(c).as_str();
+                }
+                newcmd += String::from(old).as_str();
+            }
+            self.command = newcmd;
+            self.cursor.set_max(self.command.len());
+            self.cursor.next();
+        }
     }
 
     pub fn pop(&mut self) {
@@ -50,7 +70,22 @@ impl Command {
             app::Status::Error => self.set_output(""),
             app::Status::Ok => (),
         };
-        self.command.pop();
+        let cur = self.cursor.get();
+        if cur == self.command.len() {
+            self.command.pop();
+            self.tail_cursor();
+        } else {
+            let mut newcmd = String::from("");
+            for (idx, old) in self.command.chars().enumerate() {
+                if idx == cur - 1 {
+                    continue;
+                }
+                newcmd += String::from(old).as_str();
+            }
+            self.command = newcmd;
+            self.cursor.set_max(self.command.len());
+            self.cursor.prev();
+        }
     }
 
     pub fn record(&mut self) {
@@ -67,6 +102,15 @@ impl Command {
     pub fn set_output(&mut self, output: &str) {
         self.output = String::from(output);
         self.status = app::Status::Ok;
+    }
+
+    pub fn cursor(&self) -> usize {
+        self.cursor.get()
+    }
+
+    fn tail_cursor(&mut self) {
+        self.cursor.set_max(self.command.len());
+        self.cursor.set_position(self.command.len());
     }
 }
 
@@ -92,6 +136,12 @@ impl ui::Pane for Command {
             },
             KeyCode::Enter => {
                 return app::Signal::Run;
+            },
+            KeyCode::Left => {
+                self.cursor.prev();
+            },
+            KeyCode::Right => {
+                self.cursor.next();
             },
             _ => return app::Signal::Nop,
         };
