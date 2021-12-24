@@ -52,14 +52,14 @@ impl Command {
             self.command.push(c);
             self.tail_cursor();
         } else {
-            let mut newcmd = String::from("");
+            let mut newcmd: Vec<char> = Vec::new();
             for (idx, old) in self.command.chars().enumerate() {
                 if idx == cur {
-                    newcmd += String::from(c).as_str();
+                    newcmd.push(c);
                 }
-                newcmd += String::from(old).as_str();
+                newcmd.push(old);
             }
-            self.command = newcmd;
+            self.command = newcmd.into_iter().collect();
             self.cursor.set_max(self.command.len());
             self.cursor.next();
         }
@@ -75,14 +75,14 @@ impl Command {
             self.command.pop();
             self.tail_cursor();
         } else {
-            let mut newcmd = String::from("");
+            let mut newcmd: Vec<char> = Vec::new();
             for (idx, old) in self.command.chars().enumerate() {
                 if idx == cur - 1 {
                     continue;
                 }
-                newcmd += String::from(old).as_str();
+                newcmd.push(old);
             }
-            self.command = newcmd;
+            self.command = newcmd.into_iter().collect();
             self.cursor.set_max(self.command.len());
             self.cursor.prev();
         }
