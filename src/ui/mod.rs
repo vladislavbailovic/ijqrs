@@ -6,7 +6,7 @@ use tui::{
     Frame,
 };
 use crossterm::event::{KeyCode, KeyModifiers};
-use super::app;
+use super::{app,help};
 
 pub mod panels;
 pub mod scroller;
@@ -18,6 +18,7 @@ pub enum Panel {
     Source,
     Output,
     Command,
+    Help,
 }
 
 pub trait Pane {
@@ -34,6 +35,20 @@ const COLOR_FG: Color = Color::Gray;
 const COLOR_FG_ACTIVE: Color = Color::White;
 
 pub fn draw<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
+    match state.mode() {
+        app::Mode::Help => draw_help(frame, state),
+        _ => draw_app(frame, state)
+    }
+}
+
+pub fn draw_help<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
+    let output = Paragraph::new(help::usage())
+        .block(get_block(&Panel::Source, String::from("Help"), state))
+        .wrap(Wrap { trim: true });
+    frame.render_widget(output, frame.size());
+}
+
+pub fn draw_app<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
     let frame_size = frame.size();
     let half_width = frame_size.width / 2;
     let vert_height = frame_size.height - 3;
@@ -63,6 +78,7 @@ pub fn draw<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
     let cmd_title = match state.mode() {
         &app::Mode::Shell => String::from("jq Command"),
         &app::Mode::Internal => String::from("Internal Command"),
+        _ => String::from(""),
     };
     let cmd_output = Paragraph::new(state.command().get_content())
         .block(get_block(&Panel::Command, cmd_title, state))
@@ -87,6 +103,7 @@ fn get_block(panel: &Panel, title: String, state: &app::State) -> Block<'static>
             Panel::Command => COLOR_FG_ACTIVE,
             _ => COLOR_FG,
         },
+        Panel::Help => COLOR_FG_ACTIVE,
     };
     Block::default()
         .title(String::from(" ") + &title + " ")

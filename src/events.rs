@@ -17,6 +17,7 @@ fn handle_key_event(key: KeyEvent, state: &mut app::State) -> app::Signal {
                 ui::Panel::Command => ui::Panel::Output,
                 ui::Panel::Output => ui::Panel::Source,
                 ui::Panel::Source => ui::Panel::Command,
+                ui::Panel::Help => ui::Panel::Help,
             };
             state.set_active(active);
             app::Signal::Nop
@@ -34,6 +35,10 @@ fn handle_key_event(key: KeyEvent, state: &mut app::State) -> app::Signal {
                 },
                 KeyCode::Up => {
                     state.get_mut_active().scroll_up();
+                    return app::Signal::Nop;
+                },
+                KeyCode::Char('?') => {
+                    state.set_mode(app::Mode::Help);
                     return app::Signal::Nop;
                 },
                 _ => state.get_mut_active().handle_event(code, modifiers),

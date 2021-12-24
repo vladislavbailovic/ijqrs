@@ -11,6 +11,7 @@ pub mod app;
 pub mod events;
 pub mod opts;
 pub mod ui;
+pub mod help;
 
 fn main() {
     match opts::Flags::get() {
@@ -28,9 +29,8 @@ fn main() {
     };
 }
 
-// TODO: Show actual help and usage
 fn show_help() {
-    println!("HALP!");
+    println!("{}", help::usage());
 }
 
 fn run(app: &mut app::State) {

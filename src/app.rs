@@ -13,6 +13,7 @@ pub enum Signal {
 pub enum Mode {
     Internal,
     Shell,
+    Help,
 }
 
 pub enum Status {
@@ -67,15 +68,19 @@ impl State {
 
     pub fn switch_mode(&mut self) {
         match self.mode {
-            Mode::Shell => self.mode = Mode::Internal,
-            Mode::Internal => self.mode = Mode::Shell,
+            Mode::Shell => self.set_mode(Mode::Internal),
+            _ => self.set_mode(Mode::Shell),
         };
+    }
+
+    pub fn set_mode(&mut self, mode: Mode) {
+        self.mode = mode
     }
 
     pub fn command(&self) -> &ui::panels::Command {
         match self.mode {
-            Mode::Shell => &self.command,
             Mode::Internal => &self.internal,
+            _ => &self.command,
         }
     }
 
@@ -91,8 +96,8 @@ impl State {
             return Box::new(&mut self.output);
         }
         match self.mode {
-            Mode::Shell => Box::new(&mut self.command),
             Mode::Internal => Box::new(&mut self.internal),
+            _ => Box::new(&mut self.command),
         }
     }
 
@@ -114,6 +119,7 @@ impl State {
         match self.mode {
             Mode::Shell => self.run_shell_command(),
             Mode::Internal => self.run_internal_command(),
+            _ => ()
         }
     }
 
