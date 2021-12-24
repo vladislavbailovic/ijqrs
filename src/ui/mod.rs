@@ -59,6 +59,7 @@ pub fn draw<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
         .block(get_block(&Panel::Output, String::from("Result"), state))
         .scroll((state.output.get_pos() as u16, 0))
         .wrap(Wrap { trim: true });
+
     let cmd_title = match state.mode() {
         &app::Mode::Shell => String::from("jq Command"),
         &app::Mode::Internal => String::from("Internal Command"),

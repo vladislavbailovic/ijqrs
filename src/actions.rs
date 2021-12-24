@@ -1,7 +1,7 @@
 use super::app;
 use super::ui::Pane;
 
-pub fn run_internal(command: &str, state: &app::State) -> String {
+pub fn run_internal(command: &str, state: &app::State) -> Result<String, String> {
     let cmd: Vec<&str> = command.split(' ').collect();
     match cmd[0] {
         "w" => {
@@ -11,7 +11,7 @@ pub fn run_internal(command: &str, state: &app::State) -> String {
             }
             let fname = fname;
             let out = state.output.get_content();
-            return write_file(&fname, out.as_str());
+            return Ok(write_file(&fname, out.as_str()));
         },
         "wc" => {
             let mut fname = "ijqrs.cmd";
@@ -20,11 +20,10 @@ pub fn run_internal(command: &str, state: &app::State) -> String {
             }
             let fname = fname;
             let out = state.jq().get_content();
-            return write_file(&fname, out.as_str());
+            return Ok(write_file(&fname, out.as_str()));
         },
-        _ => println!("Unknown command!"),
+        _ => return Err("Unknown command!".to_string()),
     };
-    return String::from("internal");
 }
 
 use std::process::Command;

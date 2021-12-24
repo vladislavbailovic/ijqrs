@@ -15,6 +15,11 @@ pub enum Mode {
     Shell,
 }
 
+pub enum Status {
+    Error,
+    Ok,
+}
+
 pub struct State {
     pub output: ui::panels::Content,
     pub source: ui::panels::Content,
@@ -114,9 +119,12 @@ impl State {
 
     pub fn run_internal_command(&mut self) {
         self.internal.record();
-        // TODO: somehow indicate internal command output and/or status
-        actions::run_internal(&self.internal.get_content(), &self);
+        let result = actions::run_internal(&self.internal.get_content(), &self);
         self.internal.clear();
+        match result {
+            Err(msg) => self.internal.set_error(&msg),
+            Ok(msg) => self.internal.set_output(&msg),
+        };
     }
 
     pub fn run_shell_command(&mut self) {

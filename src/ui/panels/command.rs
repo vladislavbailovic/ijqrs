@@ -6,7 +6,9 @@ use super::Scroller;
 pub struct Command {
     scroll: Scroller,
     history: Vec<String>,
-    command: String
+    command: String,
+    output: String,
+    status: app::Status,
 }
 
 impl Command {
@@ -15,7 +17,9 @@ impl Command {
         Command{
             scroll: s,
             history: vec![command.as_str().to_string()],
-            command: command
+            command: command,
+            output: String::from(""),
+            status: app::Status::Ok,
         }
     }
 
@@ -34,10 +38,18 @@ impl Command {
     }
 
     pub fn push(&mut self, c: char) {
+        match self.status {
+            app::Status::Error => self.set_output(""),
+            app::Status::Ok => (),
+        };
         self.command.push(c);
     }
 
     pub fn pop(&mut self) {
+        match self.status {
+            app::Status::Error => self.set_output(""),
+            app::Status::Ok => (),
+        };
         self.command.pop();
     }
 
@@ -46,12 +58,25 @@ impl Command {
         self.scroll.set_max(self.history.len() - 1);
         self.scroll.set_position(self.scroll.max());
     }
+
+    pub fn set_error(&mut self, error: &str) {
+        self.output = String::from(error);
+        self.status = app::Status::Error;
+    }
+
+    pub fn set_output(&mut self, output: &str) {
+        self.output = String::from(output);
+        self.status = app::Status::Ok;
+    }
 }
 
 impl ui::Pane for Command {
     fn get_pos(&self) -> u16 { self.scroll.get() as u16 }
     fn get_content(&self) -> String {
-       self.command.as_str().to_string()
+        match self.status {
+            app::Status::Error => self.output.as_str().to_string(),
+            app::Status::Ok => self.command.as_str().to_string(),
+        }
     }
     fn get_type(&self) -> &ui::Panel { &ui::Panel::Command }
     fn scroll_up(&mut self) { self.prev_from_history(); }
@@ -60,10 +85,10 @@ impl ui::Pane for Command {
     fn handle_event(&mut self, code: KeyCode, _modifiers: KeyModifiers) -> app::Signal {
         match code {
             KeyCode::Char(c) => {
-                self.command.push(c);
+                self.push(c);
             },
             KeyCode::Backspace => {
-                self.command.pop();
+                self.pop();
             },
             KeyCode::Enter => {
                 return app::Signal::Run;
