@@ -55,7 +55,7 @@ fn run(app: &mut app::State) {
             app::Signal::Run => {
                 app.run_current_command();
             },
-            _ => continue,
+            app::Signal::Nop => continue,
         }
     }
 }

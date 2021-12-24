@@ -8,7 +8,6 @@ pub enum Signal {
     Quit,
     Nop,
     Run,
-    Mode,
 }
 
 pub enum Mode {
@@ -131,7 +130,7 @@ impl State {
         let y = match panel {
             ui::Panel::Source => self.source.get_pos(),
             ui::Panel::Output => self.output.get_pos(),
-            _ => 0,
+            ui::Panel::Command => 0,
         };
         (y as u16, x)
     }
