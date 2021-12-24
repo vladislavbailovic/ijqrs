@@ -30,6 +30,7 @@ impl Command {
 
     pub fn clear(&mut self) {
         self.command = String::from("");
+        self.tail_cursor();
     }
 
     pub fn record(&mut self) {

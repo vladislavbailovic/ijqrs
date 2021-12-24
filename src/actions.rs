@@ -22,7 +22,7 @@ pub fn run_internal(command: &str, state: &app::State) -> Result<String, String>
             let out = state.jq().get_content();
             return Ok(write_file(&fname, out.as_str()));
         },
-        _ => return Err("Unknown command!".to_string()),
+        _ => return Err(format!("Unknown command: `{}`", cmd[0]).to_string()),
     };
 }
 
