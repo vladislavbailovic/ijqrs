@@ -76,9 +76,9 @@ pub fn draw_app<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
         .scroll((state.output.get_pos() as u16, 0))
         .wrap(Wrap { trim: false });
 
-    let cmd_title = match state.mode() {
-        &app::Mode::Shell => String::from("jq Command"),
-        &app::Mode::Internal => String::from("Internal Command"),
+    let cmd_title = match *state.mode() {
+        app::Mode::Shell => String::from("jq Command"),
+        app::Mode::Internal => String::from("Internal Command"),
         _ => String::from(""),
     };
     let mut cmd = state.command().get_content();

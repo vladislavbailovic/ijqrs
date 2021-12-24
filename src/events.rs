@@ -36,19 +36,19 @@ fn handle_key_event(key: KeyEvent, state: &mut app::State) -> app::Signal {
             KeyCode::Esc => {
                 state.switch_mode();
                 state.set_active(ui::Panel::Command);
-                return app::Signal::Nop;
+                app::Signal::Nop
             }
             KeyCode::Char('?') => {
                 state.set_mode(app::Mode::Help);
-                return app::Signal::Nop;
+                app::Signal::Nop
             }
             KeyCode::Down => {
                 state.get_mut_active().scroll_down();
-                return app::Signal::Nop;
+                app::Signal::Nop
             }
             KeyCode::Up => {
                 state.get_mut_active().scroll_up();
-                return app::Signal::Nop;
+                app::Signal::Nop
             }
             _ => state.get_mut_active().handle_event(code, modifiers),
         },

@@ -22,7 +22,7 @@ impl Command {
             scroll: s,
             cursor: c,
             history: vec![command.as_str().to_string()],
-            command: command,
+            command,
             output: String::from(""),
             status: app::Status::Ok,
         }

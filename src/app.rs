@@ -43,7 +43,7 @@ impl State {
     pub fn from_stdin() -> State {
         let mut source = String::from("");
         for line in io::stdin().lock().lines() {
-            source += (String::from(line.expect("IO Error")) + "\n").as_str();
+            source += (line.expect("IO Error") + "\n").as_str();
         }
         let filename = actions::write_temp(&source);
         State::new(&filename, &source)
@@ -132,17 +132,16 @@ impl State {
 
     pub fn run_internal_command(&mut self) {
         self.internal.record();
-        let result = actions::run_internal(&self.internal.get_content(), &self);
+        let result = actions::run_internal(&self.internal.get_content(), self);
         self.internal.clear();
-        match result {
-            Err(msg) => self.internal.set_error(&msg),
-            Ok(_) => (),
-        };
+        if let Err(msg) = result {
+            self.internal.set_error(&msg);
+        }
     }
 
     pub fn run_shell_command(&mut self) {
         self.command.record();
-        let output = match actions::run_internal(actions::RUN, &self) {
+        let output = match actions::run_internal(actions::RUN, self) {
             Ok(result) => result,
             Err(result) => result,
         };

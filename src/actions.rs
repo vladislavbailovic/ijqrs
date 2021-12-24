@@ -17,7 +17,7 @@ pub fn run_internal(command: &str, state: &app::State) -> Result<String, String>
     let param = param;
 
     let mut instruction = String::from(cmd[0]);
-    if instruction.chars().nth(0) == Some(':') {
+    if instruction.starts_with(':') {
         instruction = instruction.chars().skip(1).collect();
     }
     let instruction = instruction;
@@ -29,7 +29,7 @@ pub fn run_internal(command: &str, state: &app::State) -> Result<String, String>
 
         _ => instructions::new(Instruction::Unknown, command.to_string()),
     };
-    return inst.eval(state);
+    inst.eval(state)
 }
 
 use std::env;
@@ -60,5 +60,5 @@ pub fn write_temp(source: &str) -> String {
     let mut file = File::create(path).expect("Error creating temp file");
     file.write_all(source.as_bytes())
         .expect("Error writing file!");
-    return String::from(path);
+    String::from(path)
 }

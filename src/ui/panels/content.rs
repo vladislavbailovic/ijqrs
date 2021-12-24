@@ -10,10 +10,9 @@ pub struct Content {
 }
 impl Content {
     pub fn new(content: String, kind: ui::Panel) -> Content {
-        let lines: Vec<&str> = content.split("\n").collect();
-        let s = Scroller::new(lines.len());
+        let s = Scroller::new(content.split('\n').count());
         Content {
-            kind: kind,
+            kind,
             scroll: s,
             content: String::from(content.as_str()),
         }

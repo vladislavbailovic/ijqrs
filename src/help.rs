@@ -12,5 +12,5 @@ pub fn shortcuts() -> String {
     for (key, help) in events::global_keys().iter() {
         res.push(format!("    <{}>: {}", key, help));
     }
-    return res.join("\n");
+    res.join("\n")
 }
