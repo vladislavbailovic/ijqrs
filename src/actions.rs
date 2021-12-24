@@ -1,29 +1,24 @@
 use super::app;
-use super::ui::Pane;
+
+mod instructions;
+use instructions::{
+    Instruction,
+};
 
 pub fn run_internal(command: &str, state: &app::State) -> Result<String, String> {
-    let cmd: Vec<&str> = command.split(' ').collect();
-    match cmd[0] {
-        "w" => {
-            let mut fname = "ijqrs.out";
-            if cmd.len() > 1 {
-                fname = cmd[1];
-            }
-            let fname = fname;
-            let out = state.output.get_content();
-            return Ok(write_file(&fname, out.as_str()));
-        },
-        "wc" => {
-            let mut fname = "ijqrs.cmd";
-            if cmd.len() > 1 {
-                fname = cmd[1];
-            }
-            let fname = fname;
-            let out = state.jq().get_content();
-            return Ok(write_file(&fname, out.as_str()));
-        },
-        _ => return Err(format!("Unknown command: `{}`", cmd[0]).to_string()),
+    let cmd: Vec<&str> = command.splitn(2, ' ').collect();
+    let mut param = "";
+    if cmd.len() > 1 {
+        param = cmd[1];
+    }
+    let param = param;
+    let instruction = match cmd[0] {
+        "w" => instructions::new(Instruction::WriteOut,  param.to_string()),
+        "wo" => instructions::new(Instruction::WriteOut, param.to_string()),
+        "wc" => instructions::new(Instruction::WriteCmd, param.to_string()),
+        _=> instructions::new(Instruction::Unknown, command.to_string()),
     };
+    return instruction.eval(state);
 }
 
 use std::process::Command;
