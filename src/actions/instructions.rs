@@ -1,6 +1,9 @@
 use super::{app, write_file};
 use super::super::ui::Pane;
 
+const OUTFILE_CMD: &str = "ijqrs.cmd";
+const OUTFILE_OUT: &str = "ijqrs.out";
+
 pub enum Instruction {
     Unknown,
     WriteOut,
@@ -59,7 +62,7 @@ impl InstrWrite for WriteOut {
         self.param.as_str().to_string()
     }
     fn default_filename(&self) -> String {
-        String::from("ijqrs.out")
+        String::from(OUTFILE_OUT)
     }
     fn content(&self, state: &app::State) -> String {
         state.output.get_content()
@@ -74,7 +77,7 @@ impl InstrWrite for WriteCmd {
         self.param.as_str().to_string()
     }
     fn default_filename(&self) -> String {
-        String::from("ijqrs.cmd")
+        String::from(OUTFILE_CMD)
     }
     fn content(&self, state: &app::State) -> String {
         state.jq().get_content()

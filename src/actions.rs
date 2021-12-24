@@ -14,8 +14,14 @@ pub fn run_internal(command: &str, state: &app::State) -> Result<String, String>
     let param = param;
     let instruction = match cmd[0] {
         "w" => instructions::new(Instruction::WriteOut,  param.to_string()),
+        ":w" => instructions::new(Instruction::WriteOut,  param.to_string()),
+
         "wo" => instructions::new(Instruction::WriteOut, param.to_string()),
+        ":wo" => instructions::new(Instruction::WriteOut, param.to_string()),
+
         "wc" => instructions::new(Instruction::WriteCmd, param.to_string()),
+        ":wc" => instructions::new(Instruction::WriteCmd, param.to_string()),
+
         _=> instructions::new(Instruction::Unknown, command.to_string()),
     };
     return instruction.eval(state);
