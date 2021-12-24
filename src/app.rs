@@ -48,18 +48,19 @@ impl State {
 
     fn new(filename: &str, source: &str) -> State {
         let command = ui::panels::Command::new(String::from(".|keys"));
-        let output = actions::run_command(&command.get_content(), filename);
 
-        State {
+        let mut state = State {
             filename: String::from(filename),
             source: ui::panels::Content::new(String::from(source), ui::Panel::Source),
-            output: ui::panels::Content::new(output, ui::Panel::Output),
+            output: ui::panels::Content::new(String::from(""), ui::Panel::Output),
 
             command,
             internal: ui::panels::Command::new(String::from("")),
             active: ui::Panel::Command,
             mode: Mode::Shell,
-        }
+        };
+        state.run_shell_command();
+        state
     }
 
     pub fn mode(&self) -> &Mode {
@@ -138,7 +139,10 @@ impl State {
 
     pub fn run_shell_command(&mut self) {
         self.command.record();
-        let output = actions::run_command(&self.command.get_content(), self.filename.as_str());
+        let output = match actions::run_internal(actions::RUN, &self) {
+            Ok(result) => result,
+            Err(result) => result
+        };
         self.output = ui::panels::Content::new(output, ui::Panel::Output);
     }
 }

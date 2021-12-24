@@ -5,6 +5,11 @@ use instructions::{
     Instruction,
 };
 
+pub const RUN: &str = "r";
+pub const WRITE: &str = "w";
+pub const WRITE_OUT: &str = "wo";
+pub const WRITE_CMD: &str = "wc";
+
 pub fn run_internal(command: &str, state: &app::State) -> Result<String, String> {
     let cmd: Vec<&str> = command.splitn(2, ' ').collect();
     let mut param = "";
@@ -12,34 +17,21 @@ pub fn run_internal(command: &str, state: &app::State) -> Result<String, String>
         param = cmd[1];
     }
     let param = param;
-    let instruction = match cmd[0] {
-        "w" => instructions::new(Instruction::WriteOut,  param.to_string()),
-        ":w" => instructions::new(Instruction::WriteOut,  param.to_string()),
 
-        "wo" => instructions::new(Instruction::WriteOut, param.to_string()),
-        ":wo" => instructions::new(Instruction::WriteOut, param.to_string()),
-
-        "wc" => instructions::new(Instruction::WriteCmd, param.to_string()),
-        ":wc" => instructions::new(Instruction::WriteCmd, param.to_string()),
+    let mut instruction = String::from(cmd[0]);
+    if instruction.chars().nth(0) == Some(':') {
+        instruction = instruction.chars().skip(1).collect();
+    }
+    let instruction = instruction;
+    let inst = match instruction.as_str() {
+        RUN => instructions::new(Instruction::Jq, param.to_string()),
+        WRITE => instructions::new(Instruction::WriteOut,  param.to_string()),
+        WRITE_OUT => instructions::new(Instruction::WriteOut, param.to_string()),
+        WRITE_CMD => instructions::new(Instruction::WriteCmd, param.to_string()),
 
         _=> instructions::new(Instruction::Unknown, command.to_string()),
     };
-    return instruction.eval(state);
-}
-
-use std::process::Command;
-
-pub fn run_command(command: &str, filename: &str) -> String {
-    let command = Command::new("jq")
-        .arg(command)
-        .arg(filename)
-        .output()
-        .expect("Command execution failed");
-    let result = String::from_utf8(command.stdout).expect("Invalid stdout");
-    if result.is_empty() {
-        return String::from_utf8(command.stderr).expect("Invalid stderr");
-    }
-    result
+    return inst.eval(state);
 }
 
 use std::env;

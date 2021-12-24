@@ -6,6 +6,7 @@ const OUTFILE_OUT: &str = "ijqrs.out";
 
 pub enum Instruction {
     Unknown,
+    Jq,
     WriteOut,
     WriteCmd,
     // YankOut,
@@ -14,6 +15,7 @@ pub enum Instruction {
 
 pub fn new(inst: Instruction, param: String) -> Box<dyn Instr> {
     match inst {
+        Instruction::Jq => Box::new(Jq{}),
         Instruction::WriteOut => Box::new(WriteOut{ param }),
         Instruction::WriteCmd => Box::new(WriteCmd{ param }),
         Instruction::Unknown => Box::new(Unknown{ param }),
@@ -51,6 +53,25 @@ struct Unknown {
 impl Instr for Unknown {
     fn eval(&self, _state: &app::State) -> Result<String, String> {
         Err(format!("Unknown command: {}", self.param))
+    }
+}
+
+use std::process::Command;
+struct Jq;
+impl Instr for Jq {
+    fn eval(&self, state: &app::State) -> Result<String, String> {
+        let command = &state.jq().get_content();
+        let filename = state.filename.as_str();
+        let command = Command::new("jq")
+            .arg(command)
+            .arg(filename)
+            .output()
+            .expect("Command execution failed");
+        let result = String::from_utf8(command.stdout).expect("Invalid stdout");
+        if result.is_empty() {
+            return Ok(String::from_utf8(command.stderr).expect("Invalid stderr"));
+        }
+        Ok(result)
     }
 }
 
