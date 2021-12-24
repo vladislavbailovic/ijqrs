@@ -65,7 +65,25 @@ impl Command {
         }
     }
 
-    pub fn pop(&mut self) {
+    pub fn delete(&mut self) {
+        match self.status {
+            app::Status::Error => self.set_output(""),
+            app::Status::Ok => (),
+        };
+        let cur = self.cursor.get();
+
+        let mut newcmd: Vec<char> = Vec::new();
+        for (idx, old) in self.command.chars().enumerate() {
+            if idx == cur {
+                continue;
+            }
+            newcmd.push(old);
+        }
+        self.command = newcmd.into_iter().collect();
+        self.cursor.set_max(self.command.len());
+    }
+
+    pub fn backspace(&mut self) {
         match self.status {
             app::Status::Error => self.set_output(""),
             app::Status::Ok => (),
@@ -132,7 +150,10 @@ impl ui::Pane for Command {
                 self.push(c);
             },
             KeyCode::Backspace => {
-                self.pop();
+                self.backspace();
+            },
+            KeyCode::Delete => {
+                self.delete();
             },
             KeyCode::Enter => {
                 return app::Signal::Run;
@@ -140,8 +161,14 @@ impl ui::Pane for Command {
             KeyCode::Left => {
                 self.cursor.prev();
             },
+            KeyCode::Home => {
+                self.cursor.set_position(0);
+            },
             KeyCode::Right => {
                 self.cursor.next();
+            },
+            KeyCode::End => {
+                self.tail_cursor();
             },
             _ => return app::Signal::Nop,
         };
