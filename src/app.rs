@@ -124,14 +124,4 @@ impl State {
         let output = actions::run_command(&self.command.get_content(), self.filename.as_str());
         self.output = ui::panels::Content::new(output, ui::Panel::Output);
     }
-
-    pub fn scroll_pos(&self, panel: ui::Panel) -> (u16, u16) {
-        let x = 0;
-        let y = match panel {
-            ui::Panel::Source => self.source.get_pos(),
-            ui::Panel::Output => self.output.get_pos(),
-            ui::Panel::Command => 0,
-        };
-        (y as u16, x)
-    }
 }

@@ -53,11 +53,11 @@ pub fn draw<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
 
     let source_output = Paragraph::new(state.source.get_content())
         .block(get_block(&Panel::Source, String::from("Source"), state))
-        .scroll(state.scroll_pos(Panel::Source))
+        .scroll((state.source.get_pos() as u16, 0))
         .wrap(Wrap { trim: true });
     let result_output = Paragraph::new(state.output.get_content())
         .block(get_block(&Panel::Output, String::from("Result"), state))
-        .scroll(state.scroll_pos(Panel::Output))
+        .scroll((state.output.get_pos() as u16, 0))
         .wrap(Wrap { trim: true });
     let cmd_title = match state.mode() {
         &app::Mode::Shell => String::from("jq Command"),
