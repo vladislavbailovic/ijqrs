@@ -8,7 +8,7 @@ pub const WRITE: &str = "w";
 pub const WRITE_OUT: &str = "wo";
 pub const WRITE_CMD: &str = "wc";
 
-pub fn run_internal(command: &str, state: &app::State) -> Result<String, String> {
+pub fn run(command: &str, state: &app::State) -> Result<String, String> {
     let cmd: Vec<&str> = command.splitn(2, ' ').collect();
     let mut param = "";
     if cmd.len() > 1 {

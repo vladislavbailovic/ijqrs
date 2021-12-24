@@ -132,7 +132,7 @@ impl State {
 
     pub fn run_internal_command(&mut self) {
         self.internal.record();
-        let result = actions::run_internal(&self.internal.get_content(), self);
+        let result = actions::run(&self.internal.get_content(), self);
         self.internal.clear();
         if let Err(msg) = result {
             self.internal.set_error(&msg);
@@ -141,7 +141,7 @@ impl State {
 
     pub fn run_shell_command(&mut self) {
         self.command.record();
-        let output = match actions::run_internal(actions::RUN, self) {
+        let output = match actions::run(actions::RUN, self) {
             Ok(result) => result,
             Err(result) => result,
         };
