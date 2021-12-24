@@ -44,11 +44,6 @@ impl Command {
         self.status = app::Status::Error;
     }
 
-    pub fn set_output(&mut self, output: &str) {
-        self.output = String::from(output);
-        self.status = app::Status::Ok;
-    }
-
     pub fn cursor(&self) -> usize {
         self.cursor.get()
     }
@@ -64,10 +59,7 @@ impl Command {
     }
 
     fn push(&mut self, c: char) {
-        match self.status {
-            app::Status::Error => self.set_output(""),
-            app::Status::Ok => (),
-        };
+        self.clear_error();
         let cur = self.cursor.get();
         if cur == self.command.len() {
             self.command.push(c);
@@ -87,12 +79,8 @@ impl Command {
     }
 
     fn delete(&mut self) {
-        match self.status {
-            app::Status::Error => self.set_output(""),
-            app::Status::Ok => (),
-        };
+        self.clear_error();
         let cur = self.cursor.get();
-
         let mut newcmd: Vec<char> = Vec::new();
         for (idx, old) in self.command.chars().enumerate() {
             if idx == cur {
@@ -105,10 +93,7 @@ impl Command {
     }
 
     fn backspace(&mut self) {
-        match self.status {
-            app::Status::Error => self.set_output(""),
-            app::Status::Ok => (),
-        };
+        self.clear_error();
         let cur = self.cursor.get();
         if cur == self.command.len() {
             self.command.pop();
@@ -130,6 +115,11 @@ impl Command {
     fn tail_cursor(&mut self) {
         self.cursor.set_max(self.command.len());
         self.cursor.set_position(self.command.len());
+    }
+
+    fn clear_error(&mut self) {
+        self.output = String::from("");
+        self.status = app::Status::Ok;
     }
 }
 

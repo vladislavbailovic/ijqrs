@@ -69,7 +69,8 @@ impl State {
     pub fn switch_mode(&mut self) {
         match self.mode {
             Mode::Shell => self.set_mode(Mode::Internal),
-            _ => self.set_mode(Mode::Shell),
+            Mode::Internal => self.set_mode(Mode::Shell),
+            Mode::Help => self.set_mode(Mode::Shell),
         };
     }
 
@@ -80,7 +81,8 @@ impl State {
     pub fn command(&self) -> &ui::panels::Command {
         match self.mode {
             Mode::Internal => &self.internal,
-            _ => &self.command,
+            Mode::Shell => &self.command,
+            Mode::Help => &self.command,
         }
     }
 
@@ -97,7 +99,8 @@ impl State {
         }
         match self.mode {
             Mode::Internal => Box::new(&mut self.internal),
-            _ => Box::new(&mut self.command),
+            Mode::Shell => Box::new(&mut self.command),
+            Mode::Help => Box::new(&mut self.command),
         }
     }
 
@@ -119,7 +122,7 @@ impl State {
         match self.mode {
             Mode::Shell => self.run_shell_command(),
             Mode::Internal => self.run_internal_command(),
-            _ => ()
+            Mode::Help => ()
         }
     }
 
@@ -129,7 +132,7 @@ impl State {
         self.internal.clear();
         match result {
             Err(msg) => self.internal.set_error(&msg),
-            Ok(msg) => self.internal.set_output(&msg),
+            Ok(_) => (),
         };
     }
 
