@@ -42,9 +42,9 @@ pub fn draw<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
 }
 
 pub fn draw_help<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
-    let output = Paragraph::new(help::usage())
-        .block(get_block(&Panel::Source, String::from("Help"), state))
-        .wrap(Wrap { trim: true });
+    let output = Paragraph::new(help::usage() + "\n" + help::shortcuts().as_str())
+        .block(get_block(&Panel::Help, String::from("Help"), state))
+        .wrap(Wrap { trim: false });
     frame.render_widget(output, frame.size());
 }
 
@@ -69,11 +69,11 @@ pub fn draw_app<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
     let source_output = Paragraph::new(state.source.get_content())
         .block(get_block(&Panel::Source, String::from("Source"), state))
         .scroll((state.source.get_pos() as u16, 0))
-        .wrap(Wrap { trim: true });
+        .wrap(Wrap { trim: false });
     let result_output = Paragraph::new(state.output.get_content())
         .block(get_block(&Panel::Output, String::from("Result"), state))
         .scroll((state.output.get_pos() as u16, 0))
-        .wrap(Wrap { trim: true });
+        .wrap(Wrap { trim: false });
 
     let cmd_title = match state.mode() {
         &app::Mode::Shell => String::from("jq Command"),
