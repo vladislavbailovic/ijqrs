@@ -23,6 +23,9 @@ impl Scroller {
 
     pub fn set_max(&mut self, max: usize) {
         self.max = max;
+        if self.position > self.max {
+            self.position = self.max
+        }
     }
 
     pub fn set_position(&mut self, pos: usize) {
