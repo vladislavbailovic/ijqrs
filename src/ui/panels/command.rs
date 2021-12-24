@@ -28,21 +28,41 @@ impl Command {
         }
     }
 
-    pub fn prev_from_history(&mut self) {
-        self.scroll.prev();
-        self.command = self.history[self.scroll.get()].as_str().to_string();
-    }
-
-    pub fn next_from_history(&mut self) {
-        self.scroll.next();
-        self.command = self.history[self.scroll.get()].as_str().to_string();
-    }
-
     pub fn clear(&mut self) {
         self.command = String::from("");
     }
 
-    pub fn push(&mut self, c: char) {
+    pub fn record(&mut self) {
+        self.history.push(self.command.to_string());
+        self.scroll.set_max(self.history.len() - 1);
+        self.scroll.set_position(self.scroll.max());
+    }
+
+    pub fn set_error(&mut self, error: &str) {
+        self.output = String::from(error);
+        self.status = app::Status::Error;
+    }
+
+    pub fn set_output(&mut self, output: &str) {
+        self.output = String::from(output);
+        self.status = app::Status::Ok;
+    }
+
+    pub fn cursor(&self) -> usize {
+        self.cursor.get()
+    }
+
+    fn prev_from_history(&mut self) {
+        self.scroll.prev();
+        self.command = self.history[self.scroll.get()].as_str().to_string();
+    }
+
+    fn next_from_history(&mut self) {
+        self.scroll.next();
+        self.command = self.history[self.scroll.get()].as_str().to_string();
+    }
+
+    fn push(&mut self, c: char) {
         match self.status {
             app::Status::Error => self.set_output(""),
             app::Status::Ok => (),
@@ -65,7 +85,7 @@ impl Command {
         }
     }
 
-    pub fn delete(&mut self) {
+    fn delete(&mut self) {
         match self.status {
             app::Status::Error => self.set_output(""),
             app::Status::Ok => (),
@@ -83,7 +103,7 @@ impl Command {
         self.cursor.set_max(self.command.len());
     }
 
-    pub fn backspace(&mut self) {
+    fn backspace(&mut self) {
         match self.status {
             app::Status::Error => self.set_output(""),
             app::Status::Ok => (),
@@ -104,26 +124,6 @@ impl Command {
             self.cursor.set_max(self.command.len());
             self.cursor.prev();
         }
-    }
-
-    pub fn record(&mut self) {
-        self.history.push(self.command.to_string());
-        self.scroll.set_max(self.history.len() - 1);
-        self.scroll.set_position(self.scroll.max());
-    }
-
-    pub fn set_error(&mut self, error: &str) {
-        self.output = String::from(error);
-        self.status = app::Status::Error;
-    }
-
-    pub fn set_output(&mut self, output: &str) {
-        self.output = String::from(output);
-        self.status = app::Status::Ok;
-    }
-
-    pub fn cursor(&self) -> usize {
-        self.cursor.get()
     }
 
     fn tail_cursor(&mut self) {
