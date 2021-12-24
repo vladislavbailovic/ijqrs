@@ -3,6 +3,7 @@ use tui::{
     layout::Rect,
     style::{Color, Style},
     widgets::{Block, Borders, Paragraph, Wrap},
+    text::{Span, Spans},
     Frame,
 };
 use crossterm::event::{KeyCode, KeyModifiers};
@@ -80,9 +81,22 @@ pub fn draw_app<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
         &app::Mode::Internal => String::from("Internal Command"),
         _ => String::from(""),
     };
-    let cmd_output = Paragraph::new(state.command().get_content())
+    let mut cmd = state.command().get_content();
+    let cursor = state.command().cursor();
+    if cursor == cmd.len() {
+        cmd += "_";
+    }
+    let mut editable = Vec::new();
+    for (idx,c) in cmd.chars().enumerate() {
+        let mut style = Style::default();
+        if idx == cursor {
+            style = style.bg(COLOR_FG).fg(COLOR_BG);
+        }
+        editable.push(Span::styled(String::from(c), style));
+    }
+    let cmd_output = Paragraph::new(Spans::from(editable))
         .block(get_block(&Panel::Command, cmd_title, state))
-        .wrap(Wrap { trim: true });
+        .wrap(Wrap { trim: false });
 
     frame.render_widget(source_output, source_size);
     frame.render_widget(result_output, result_size);
