@@ -91,6 +91,7 @@ impl ui::Pane for Content {
                 PatternMode::Matching => {
                     self.mode = PatternMode::None;
                     self.pattern = String::from("");
+                    self.highlight = 0;
                 },
                 _ => ()
             },

@@ -34,9 +34,9 @@ fn handle_key_event(key: KeyEvent, state: &mut app::State) -> app::Signal {
         }
         KeyEvent { code, modifiers } => match code {
             KeyCode::Esc => {
+                state.get_mut_active().handle_event(code, modifiers);
                 state.switch_mode();
                 state.set_active(ui::Panel::Command);
-                state.get_mut_active().handle_event(code, modifiers);
                 app::Signal::Nop
             }
             KeyCode::Char('?') => {
