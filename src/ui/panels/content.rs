@@ -32,11 +32,31 @@ impl Content {
     }
 
     fn find_next(&mut self) {
-        println!("matching `{}` forward", self.pattern);
+        let mut count = 0;
+        for line in self.content.split('\n') {
+            count += 1;
+            if line.contains(&self.pattern) {
+                if count > self.scroll.get() {
+                    break;
+                }
+            }
+        }
+        self.scroll.set_position(count);
     }
 
     fn find_prev(&mut self) {
-        println!("matching `{}` backward", self.pattern);
+        let mut lines: Vec<&str> = self.content.split('\n').collect();
+        let mut count = lines.len();
+        lines.reverse();
+        for line in lines {
+            count -= 1;
+            if line.contains(&self.pattern) {
+                if count < self.scroll.get() {
+                    break;
+                }
+            }
+        }
+        self.scroll.set_position(count);
     }
 }
 
