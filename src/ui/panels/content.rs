@@ -7,6 +7,7 @@ pub struct Content {
     kind: ui::Panel,
     mode: PatternMode,
     pattern: String,
+    pub highlight: usize,
     scroll: Scroller,
     content: String,
 }
@@ -18,6 +19,7 @@ impl Content {
             kind,
             mode: PatternMode::None,
             pattern: String::from(""),
+            highlight: 0,
             scroll: s,
             content: String::from(content.as_str()),
         }
@@ -34,16 +36,14 @@ impl Content {
     fn find_next(&mut self) {
         let mut count = 0;
         for line in self.content.split('\n') {
-            count += 1;
             if line.contains(&self.pattern) {
-                if count > self.scroll.get() + 1 {
-                    // self.content = self.content.replace(
-                    //     line,
-                    //     format!("-->{}<--", line).as_str());
-                    self.scroll.set_position(count - 1);
+                if count > self.scroll.get() {
+                    self.scroll.set_position(count);
+                    self.highlight = count;
                     break;
                 }
             }
+            count += 1;
         }
     }
 
@@ -56,6 +56,7 @@ impl Content {
             if line.contains(&self.pattern) {
                 if count < self.scroll.get() {
                     self.scroll.set_position(count);
+                    self.highlight = count;
                     break;
                 }
             }

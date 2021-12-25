@@ -67,11 +67,16 @@ pub fn draw_app<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
         frame_size.height - vert_height,
     );
 
-    let source_output = Paragraph::new(state.source.get_content())
+    let content = state.source.get_content();
+    let styled = get_styled(content.as_str(), state.source.highlight);
+    let source_output = Paragraph::new(styled)
         .block(get_block(&Panel::Source, String::from("Source"), state))
         .scroll((state.source.get_pos() as u16, 0))
         .wrap(Wrap { trim: false });
-    let result_output = Paragraph::new(state.output.get_content())
+
+    let content = state.output.get_content();
+    let styled = get_styled(content.as_str(), state.output.highlight);
+    let result_output = Paragraph::new(styled)
         .block(get_block(&Panel::Output, String::from("Result"), state))
         .scroll((state.output.get_pos() as u16, 0))
         .wrap(Wrap { trim: false });
@@ -101,6 +106,20 @@ pub fn draw_app<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
     frame.render_widget(source_output, source_size);
     frame.render_widget(result_output, result_size);
     frame.render_widget(cmd_output, cmd_size);
+}
+
+fn get_styled(content: &str, index: usize) -> Vec<Spans> {
+    let mut styled = Vec::new();
+    let mut idx = 0;
+    for line in content.split("\n") {
+        let mut style = Style::default();
+        if idx == index {
+            style = style.bg(COLOR_FG).fg(COLOR_BG);
+        }
+        styled.push(Spans::from(vec![Span::styled(line, style)]));
+        idx += 1;
+    }
+    styled
 }
 
 fn get_block(panel: &Panel, title: String, state: &app::State) -> Block<'static> {
