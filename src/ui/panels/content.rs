@@ -36,12 +36,15 @@ impl Content {
         for line in self.content.split('\n') {
             count += 1;
             if line.contains(&self.pattern) {
-                if count > self.scroll.get() {
+                if count > self.scroll.get() + 1 {
+                    // self.content = self.content.replace(
+                    //     line,
+                    //     format!("-->{}<--", line).as_str());
+                    self.scroll.set_position(count - 1);
                     break;
                 }
             }
         }
-        self.scroll.set_position(count);
     }
 
     fn find_prev(&mut self) {
@@ -52,11 +55,11 @@ impl Content {
             count -= 1;
             if line.contains(&self.pattern) {
                 if count < self.scroll.get() {
+                    self.scroll.set_position(count);
                     break;
                 }
             }
         }
-        self.scroll.set_position(count);
     }
 }
 
