@@ -13,10 +13,15 @@ pub mod help;
 pub mod opts;
 pub mod ui;
 
+const VERSION: &str = env!("CARGO_PKG_VERSION");
+
 fn main() {
     match opts::Flags::get() {
         opts::Flags::Help => {
             show_help();
+        }
+        opts::Flags::Version => {
+            show_version();
         }
         opts::Flags::Stdin => {
             let mut app: app::State = app::State::from_stdin();
@@ -31,6 +36,10 @@ fn main() {
 
 fn show_help() {
     println!("{}", help::usage());
+}
+
+fn show_version() {
+    println!("{}", VERSION);
 }
 
 fn run(app: &mut app::State) {

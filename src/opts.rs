@@ -4,6 +4,7 @@ pub enum Flags {
     Filename(String),
     Stdin,
     Help,
+    Version,
 }
 
 impl Flags {
@@ -14,6 +15,9 @@ impl Flags {
         }
         match args[1].as_ref() {
             "-h" => Flags::Help,
+            "--help" => Flags::Help,
+            "-v" => Flags::Version,
+            "--version" => Flags::Version,
             filename => Flags::Filename(String::from(filename)),
         }
     }

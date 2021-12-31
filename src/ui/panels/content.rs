@@ -92,46 +92,46 @@ impl ui::Pane for Content {
                     self.mode = PatternMode::None;
                     self.pattern = String::from("");
                     self.highlight = 0;
-                },
-                _ => ()
+                }
+                _ => (),
             },
             KeyCode::Enter => match self.mode {
                 PatternMode::Receiving => {
                     self.mode = PatternMode::Matching;
                     self.find_next();
-                },
+                }
                 PatternMode::Matching => {
                     self.find_next();
-                },
-                _ => ()
+                }
+                _ => (),
             },
             KeyCode::Backspace => match self.mode {
                 PatternMode::Receiving => self.pop(),
-                _ => ()
+                _ => (),
             },
             KeyCode::Char('/') => match self.mode {
                 PatternMode::None => self.mode = PatternMode::Receiving,
-                _ => ()
+                _ => (),
             },
             KeyCode::Char('n') => match self.mode {
                 PatternMode::Receiving => self.push('n'),
                 PatternMode::Matching => {
                     self.find_next();
-                },
-                _ => ()
+                }
+                _ => (),
             },
             KeyCode::Char('N') => match self.mode {
                 PatternMode::Receiving => self.push('N'),
                 PatternMode::Matching => {
                     self.find_prev();
-                },
-                _ => ()
+                }
+                _ => (),
             },
             KeyCode::Char(c) => match self.mode {
                 PatternMode::Receiving => self.push(c),
-                _ => ()
+                _ => (),
             },
-            _ => ()
+            _ => (),
         };
         app::Signal::Nop
     }
