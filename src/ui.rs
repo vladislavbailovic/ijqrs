@@ -110,14 +110,12 @@ pub fn draw_app<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
 
 fn get_styled(content: &str, index: usize) -> Vec<Spans> {
     let mut styled = Vec::new();
-    let mut idx = 0;
-    for line in content.split("\n") {
+    for (idx, line) in content.split('\n').enumerate() {
         let mut style = Style::default();
         if idx == index {
             style = style.bg(COLOR_FG).fg(COLOR_BG);
         }
         styled.push(Spans::from(vec![Span::styled(line, style)]));
-        idx += 1;
     }
     styled
 }

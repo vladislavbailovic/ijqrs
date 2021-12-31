@@ -38,16 +38,12 @@ impl Content {
     }
 
     fn find_next(&mut self) {
-        let mut count = 0;
-        for line in self.content.split('\n') {
-            if line.contains(&self.pattern) {
-                if count > self.scroll.get() {
-                    self.scroll.set_position(count);
-                    self.highlight = count;
-                    break;
-                }
+        for (count, line) in self.content.split('\n').enumerate() {
+            if line.contains(&self.pattern) && count > self.scroll.get() {
+                self.scroll.set_position(count);
+                self.highlight = count;
+                break;
             }
-            count += 1;
         }
     }
 
@@ -57,12 +53,10 @@ impl Content {
         lines.reverse();
         for line in lines {
             count -= 1;
-            if line.contains(&self.pattern) {
-                if count < self.scroll.get() {
-                    self.scroll.set_position(count);
-                    self.highlight = count;
-                    break;
-                }
+            if line.contains(&self.pattern) && count < self.scroll.get() {
+                self.scroll.set_position(count);
+                self.highlight = count;
+                break;
             }
         }
     }
@@ -97,10 +91,11 @@ impl ui::Pane for Content {
 
     fn handle_event(&mut self, code: KeyCode, modifiers: KeyModifiers) -> app::Signal {
         match code {
-            KeyCode::Esc => match self.mode {
-                PatternMode::Matching => self.reset_search(),
-                _ => (),
-            },
+            KeyCode::Esc => {
+                if let PatternMode::Matching = self.mode {
+                    self.reset_search()
+                }
+            }
             KeyCode::Enter => match self.mode {
                 PatternMode::Receiving => {
                     self.mode = PatternMode::Matching;
@@ -111,18 +106,21 @@ impl ui::Pane for Content {
                 }
                 _ => (),
             },
-            KeyCode::Backspace => match self.mode {
-                PatternMode::Receiving => self.pop(),
-                _ => (),
-            },
-            KeyCode::Char('/') => match self.mode {
-                PatternMode::None => self.mode = PatternMode::Receiving,
-                _ => (),
-            },
-            KeyCode::Char('l') => match modifiers {
-                KeyModifiers::CONTROL => self.reset_search(),
-                _ => (),
-            },
+            KeyCode::Backspace => {
+                if let PatternMode::Receiving = self.mode {
+                    self.pop()
+                }
+            }
+            KeyCode::Char('/') => {
+                if let PatternMode::None = self.mode {
+                    self.mode = PatternMode::Receiving
+                }
+            }
+            KeyCode::Char('l') => {
+                if modifiers == KeyModifiers::CONTROL {
+                    self.reset_search()
+                }
+            }
             KeyCode::Char('n') => match self.mode {
                 PatternMode::Receiving => self.push('n'),
                 PatternMode::Matching => {
@@ -137,10 +135,11 @@ impl ui::Pane for Content {
                 }
                 _ => (),
             },
-            KeyCode::Char(c) => match self.mode {
-                PatternMode::Receiving => self.push(c),
-                _ => (),
-            },
+            KeyCode::Char(c) => {
+                if let PatternMode::Receiving = self.mode {
+                    self.push(c)
+                }
+            }
             _ => (),
         };
         app::Signal::Nop
