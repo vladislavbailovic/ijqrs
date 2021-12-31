@@ -147,38 +147,25 @@ fn get_block(panel: &Panel, title: String, state: &app::State) -> Block<'static>
 
 fn get_title(panel: &Panel, title: String, state: &app::State) -> String {
     match panel {
-        Panel::Source => {
-            let mut title = title;
-            {
-                let suffix = match state.source.mode {
-                    panels::content::PatternMode::None => String::from(""),
-                    panels::content::PatternMode::Receiving => {
-                        format!(": {}_", state.source.pattern())
-                    },
-                    panels::content::PatternMode::Matching => {
-                        format!(": [{}] <{}>", state.source.pattern(), state.source.highlight)
-                    }
-                };
-                title = format!("{}{}", title, suffix);
-            }
-            title
-        },
-        Panel::Output => {
-            let mut title = title;
-            {
-                let suffix = match state.output.mode {
-                    panels::content::PatternMode::None => String::from(""),
-                    panels::content::PatternMode::Receiving => {
-                        format!(": {}_", state.output.pattern())
-                    },
-                    panels::content::PatternMode::Matching => {
-                        format!(": [{}] <{}>", state.output.pattern(), state.output.highlight)
-                    }
-                };
-                title = format!("{}{}", title, suffix);
-            }
-            title
-        },
-        _ => title
+        Panel::Source => get_content_title(&state.source, title),
+        Panel::Output => get_content_title(&state.output, title),
+        _ => title,
     }
+}
+
+fn get_content_title(panel: &panels::Content, title: String) -> String {
+    let mut title = title;
+    {
+        let suffix = match panel.mode {
+            panels::content::PatternMode::None => String::from(""),
+            panels::content::PatternMode::Receiving => {
+                format!(": {}_", panel.pattern())
+            }
+            panels::content::PatternMode::Matching => {
+                format!(": [{}] <{}>", panel.pattern(), panel.highlight)
+            }
+        };
+        title = format!("{}{}", title, suffix);
+    }
+    title
 }

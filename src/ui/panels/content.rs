@@ -68,9 +68,9 @@ impl Content {
     }
 
     fn reset_search(&mut self) {
-                    self.mode = PatternMode::None;
-                    self.pattern = String::from("");
-                    self.highlight = 0;
+        self.mode = PatternMode::None;
+        self.pattern = String::from("");
+        self.highlight = 0;
     }
 }
 
