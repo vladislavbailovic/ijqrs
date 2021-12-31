@@ -7,6 +7,7 @@ JQ TUI Frontend Tool
 Quick Start
 -----------
 
-```
-cargo run
+```console
+$ cargo run ./examples/generated.json    # to run
+$ cargo install --path .                 # to install
 ```
