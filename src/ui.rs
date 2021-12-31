@@ -123,6 +123,7 @@ fn get_styled(content: &str, index: usize) -> Vec<Spans> {
 }
 
 fn get_block(panel: &Panel, title: String, state: &app::State) -> Block<'static> {
+    let title = get_title(panel, title, state);
     let fg: Color = match panel {
         Panel::Source => match state.get_active().get_type() {
             Panel::Source => COLOR_FG_ACTIVE,
@@ -142,4 +143,42 @@ fn get_block(panel: &Panel, title: String, state: &app::State) -> Block<'static>
         .title(String::from(" ") + &title + " ")
         .borders(Borders::ALL)
         .style(Style::default().fg(fg).bg(COLOR_BG))
+}
+
+fn get_title(panel: &Panel, title: String, state: &app::State) -> String {
+    match panel {
+        Panel::Source => {
+            let mut title = title;
+            {
+                let suffix = match state.source.mode {
+                    panels::content::PatternMode::None => String::from(""),
+                    panels::content::PatternMode::Receiving => {
+                        format!(": {}_", state.source.pattern())
+                    },
+                    panels::content::PatternMode::Matching => {
+                        format!(": [{}] <{}>", state.source.pattern(), state.source.highlight)
+                    }
+                };
+                title = format!("{}{}", title, suffix);
+            }
+            title
+        },
+        Panel::Output => {
+            let mut title = title;
+            {
+                let suffix = match state.output.mode {
+                    panels::content::PatternMode::None => String::from(""),
+                    panels::content::PatternMode::Receiving => {
+                        format!(": {}_", state.output.pattern())
+                    },
+                    panels::content::PatternMode::Matching => {
+                        format!(": [{}] <{}>", state.output.pattern(), state.output.highlight)
+                    }
+                };
+                title = format!("{}{}", title, suffix);
+            }
+            title
+        },
+        _ => title
+    }
 }

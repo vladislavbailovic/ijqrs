@@ -5,7 +5,7 @@ use super::Scroller;
 
 pub struct Content {
     kind: ui::Panel,
-    mode: PatternMode,
+    pub mode: PatternMode,
     pattern: String,
     pub highlight: usize,
     scroll: Scroller,
@@ -23,6 +23,10 @@ impl Content {
             scroll: s,
             content: String::from(content.as_str()),
         }
+    }
+
+    pub fn pattern(&self) -> String {
+        self.pattern.as_str().to_string()
     }
 
     fn push(&mut self, c: char) {
@@ -62,6 +66,12 @@ impl Content {
             }
         }
     }
+
+    fn reset_search(&mut self) {
+                    self.mode = PatternMode::None;
+                    self.pattern = String::from("");
+                    self.highlight = 0;
+    }
 }
 
 impl ui::Pane for Content {
@@ -85,14 +95,10 @@ impl ui::Pane for Content {
         self.content.as_str().to_string()
     }
 
-    fn handle_event(&mut self, code: KeyCode, _modifiers: KeyModifiers) -> app::Signal {
+    fn handle_event(&mut self, code: KeyCode, modifiers: KeyModifiers) -> app::Signal {
         match code {
             KeyCode::Esc => match self.mode {
-                PatternMode::Matching => {
-                    self.mode = PatternMode::None;
-                    self.pattern = String::from("");
-                    self.highlight = 0;
-                }
+                PatternMode::Matching => self.reset_search(),
                 _ => (),
             },
             KeyCode::Enter => match self.mode {
@@ -111,6 +117,10 @@ impl ui::Pane for Content {
             },
             KeyCode::Char('/') => match self.mode {
                 PatternMode::None => self.mode = PatternMode::Receiving,
+                _ => (),
+            },
+            KeyCode::Char('l') => match modifiers {
+                KeyModifiers::CONTROL => self.reset_search(),
                 _ => (),
             },
             KeyCode::Char('n') => match self.mode {
@@ -137,7 +147,7 @@ impl ui::Pane for Content {
     }
 }
 
-enum PatternMode {
+pub enum PatternMode {
     None,
     Receiving,
     Matching,
