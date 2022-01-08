@@ -56,6 +56,10 @@ fn run(app: &mut app::State) {
         let sig = events::handler(app);
         match sig {
             app::Signal::Quit => {
+                terminal.clear().expect("Unable to clear the terminal");
+                terminal
+                    .show_cursor()
+                    .expect("Unable to re-show the cursor");
                 disable_raw_mode().expect("Could not disable raw mode");
                 execute!(io::stdout(), LeaveAlternateScreen)
                     .expect("Unable to leave alternate screen");
