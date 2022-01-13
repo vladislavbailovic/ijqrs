@@ -3,22 +3,8 @@ use crossterm::event::{KeyCode, KeyModifiers};
 
 use super::Scroller;
 
-pub struct Bookmark {
-    name: String,
-    content: String,
-}
-
-impl Bookmark {
-    fn new(name: &str, content: &str) -> Self {
-        Self{
-            name: name.to_string(),
-            content: content.to_string(),
-        }
-    }
-}
-
 pub struct Bookmarks {
-    items: Vec<Bookmark>,
+    items: Vec<String>,
     scroll: Scroller,
 }
 
@@ -30,12 +16,11 @@ impl Bookmarks {
         }
     }
 
-    pub fn add(&mut self, name: &str, content: &str) {
-        let bm = Bookmark::new(name, content);
-        self.items.push(bm)
+    pub fn add(&mut self, bm: &str) {
+        self.items.push(String::from(bm))
     }
 
-    pub fn items(&self) -> &Vec<Bookmark> {
+    pub fn items(&self) -> &Vec<String> {
         &self.items()
     }
 
@@ -65,7 +50,7 @@ impl ui::Pane for Bookmarks {
     fn get_content(&self) -> String {
         let mut out = String::new();
         for bm in &self.items {
-            let item = format!("{}: {}\n", bm.name, bm.content);
+            let item = format!("\t{}\n", bm);
             out.push_str(&item);
         }
         out

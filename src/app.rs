@@ -160,6 +160,6 @@ impl State {
 
     pub fn add_bookmark(&mut self) {
         let cmd = self.command.get_content();
-        self.bookmarks.add("bookmarkName", &cmd);
+        self.bookmarks.add(&cmd);
     }
 }
