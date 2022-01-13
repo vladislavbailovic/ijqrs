@@ -51,6 +51,7 @@ impl State {
 
     fn new(filename: &str, source: &str) -> State {
         let command = ui::panels::Command::new(String::from(".|keys"));
+        let internal = ui::panels::Command::new(String::from(""));
 
         let mut state = State {
             filename: String::from(filename),
@@ -58,7 +59,7 @@ impl State {
             output: ui::panels::Content::new(String::from(""), ui::Panel::Output),
 
             command,
-            internal: ui::panels::Command::new(String::from("")),
+            internal,
             active: ui::Panel::Command,
             mode: Mode::Shell,
         };
