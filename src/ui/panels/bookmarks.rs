@@ -27,7 +27,11 @@ impl Bookmarks {
         &self.items()
     }
 
-    pub fn get(&self, idx: usize) -> String {
+    pub fn get_current_item(&self) -> String {
+        self.get(self.scroll.get())
+    }
+
+    fn get(&self, idx: usize) -> String {
         if idx < self.items.len() {
             return self.items[idx].as_str().to_string();
         }
@@ -69,7 +73,7 @@ impl ui::Pane for Bookmarks {
     fn handle_event(&mut self, code: KeyCode, _modifiers: KeyModifiers) -> app::Signal {
         match code {
             KeyCode::Enter => {
-                todo!("Handle bookmark selection");
+                return app::Signal::LoadBookmark(self.get_current_item());
             },
             _ => return app::Signal::Nop,
         };

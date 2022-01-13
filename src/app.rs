@@ -12,6 +12,7 @@ pub enum Signal {
     Nop,
     Run,
     Bookmark,
+    LoadBookmark(String),
 }
 
 pub enum Mode {
@@ -161,5 +162,11 @@ impl State {
     pub fn add_bookmark(&mut self) {
         let cmd = self.command.get_content();
         self.bookmarks.add(&cmd);
+    }
+
+    pub fn load_bookmark(&mut self, bm: String) {
+        self.command.replace(bm);
+        self.command.record();
+        self.switch_mode();
     }
 }

@@ -45,6 +45,10 @@ impl Command {
         self.cursor.get()
     }
 
+    pub fn replace(&mut self, with: String) {
+        self.command = with;
+    }
+
     fn prev_from_history(&mut self) {
         self.scroll.prev();
         self.command = self.history[self.scroll.get()].as_str().to_string();

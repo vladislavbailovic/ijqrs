@@ -71,6 +71,9 @@ fn run(app: &mut app::State) {
             app::Signal::Bookmark => {
                 app.add_bookmark();
             },
+            app::Signal::LoadBookmark(bm) => {
+                app.load_bookmark(bm);
+            },
             app::Signal::Nop => continue,
         }
     }
