@@ -17,7 +17,9 @@ impl Bookmarks {
     }
 
     pub fn add(&mut self, bm: &str) {
-        self.items.push(String::from(bm));
+        if !self.items.contains(&String::from(bm)) {
+            self.items.push(String::from(bm));
+        }
         self.scroll.set_max(self.items.len() - 1);
     }
 
