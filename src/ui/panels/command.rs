@@ -8,7 +8,6 @@ pub struct Command {
     cursor: Scroller,
     history: Vec<String>,
     command: String,
-    output: String,
     status: app::Status,
 }
 
@@ -23,7 +22,6 @@ impl Command {
             cursor: c,
             history: vec![command.as_str().to_string()],
             command,
-            output: String::from(""),
             status: app::Status::Ok,
         }
     }
@@ -40,8 +38,7 @@ impl Command {
     }
 
     pub fn set_error(&mut self, error: &str) {
-        self.output = String::from(error);
-        self.status = app::Status::Error;
+        self.status = app::Status::Error(error.to_string());
     }
 
     pub fn cursor(&self) -> usize {
@@ -118,7 +115,6 @@ impl Command {
     }
 
     fn clear_error(&mut self) {
-        self.output = String::from("");
         self.status = app::Status::Ok;
     }
 }
@@ -128,8 +124,8 @@ impl ui::Pane for Command {
         self.scroll.get() as u16
     }
     fn get_content(&self) -> String {
-        match self.status {
-            app::Status::Error => self.output.as_str().to_string(),
+        match &self.status {
+            app::Status::Error(err) => err.as_str().to_string(),
             app::Status::Ok => self.command.as_str().to_string(),
         }
     }

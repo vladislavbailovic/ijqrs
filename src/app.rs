@@ -20,7 +20,7 @@ pub enum Mode {
 }
 
 pub enum Status {
-    Error,
+    Error(String),
     Ok,
 }
 
