@@ -11,7 +11,7 @@ pub enum Signal {
     Quit,
     Nop,
     Run,
-    Bookmark,
+    AddBookmark,
     LoadBookmark(String),
 }
 

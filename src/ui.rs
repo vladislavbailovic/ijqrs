@@ -5,7 +5,7 @@ use tui::{
     layout::Rect,
     style::{Color, Style},
     text::{Span, Spans},
-    widgets::{Block, Borders, Paragraph, Wrap, Clear},
+    widgets::{Block, Borders, Clear, Paragraph, Wrap},
     Frame,
 };
 
@@ -116,7 +116,7 @@ pub fn draw_app<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
             frame_size.width - (padding * 2),
             frame_size.height - (padding * 2),
         );
-        
+
         let bm_content = &state.bookmarks.get_content();
         let bm_items = get_styled(bm_content, state.bookmarks.get_pos() as usize);
         let bookmarks = Paragraph::new(bm_items)

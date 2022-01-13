@@ -64,16 +64,16 @@ fn run(app: &mut app::State) {
                 execute!(io::stdout(), LeaveAlternateScreen)
                     .expect("Unable to leave alternate screen");
                 return;
-            },
+            }
             app::Signal::Run => {
                 app.run_current_command();
-            },
-            app::Signal::Bookmark => {
+            }
+            app::Signal::AddBookmark => {
                 app.add_bookmark();
-            },
+            }
             app::Signal::LoadBookmark(bm) => {
                 app.load_bookmark(bm);
-            },
+            }
             app::Signal::Nop => continue,
         }
     }

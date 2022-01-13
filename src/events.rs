@@ -32,7 +32,7 @@ fn handle_key_event(key: KeyEvent, state: &mut app::State) -> app::Signal {
             };
             state.set_active(active);
             app::Signal::Nop
-        },
+        }
         KeyEvent {
             code: KeyCode::Char('s'),
             modifiers: KeyModifiers::CONTROL,
@@ -42,8 +42,8 @@ fn handle_key_event(key: KeyEvent, state: &mut app::State) -> app::Signal {
                 _ => app::Mode::Bookmarks,
             };
             state.set_mode(new_mode);
-            app::Signal::Bookmark
-        },
+            app::Signal::AddBookmark
+        }
         KeyEvent { code, modifiers } => match code {
             KeyCode::Esc => {
                 state.get_mut_active().handle_event(code, modifiers);

@@ -8,9 +8,15 @@ pub struct Bookmarks {
     scroll: Scroller,
 }
 
+impl Default for Bookmarks {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Bookmarks {
     pub fn new() -> Self {
-        Self{
+        Self {
             items: Vec::new(),
             scroll: Scroller::new(0),
         }
@@ -24,7 +30,7 @@ impl Bookmarks {
     }
 
     pub fn items(&self) -> &Vec<String> {
-        &self.items()
+        &self.items
     }
 
     pub fn get_current_item(&self) -> String {
@@ -38,7 +44,7 @@ impl Bookmarks {
         "".to_string()
     }
 
-    fn del(&mut self, idx: usize) -> bool {
+    fn _del(&mut self, idx: usize) -> bool {
         if idx < self.items.len() {
             self.items.remove(idx);
             return true;
@@ -72,11 +78,10 @@ impl ui::Pane for Bookmarks {
 
     fn handle_event(&mut self, code: KeyCode, _modifiers: KeyModifiers) -> app::Signal {
         match code {
-            KeyCode::Enter => {
-                return app::Signal::LoadBookmark(self.get_current_item());
-            },
-            _ => return app::Signal::Nop,
-        };
-        app::Signal::Nop
+            KeyCode::Enter => app::Signal::LoadBookmark(self.get_current_item()),
+            // TODO: delete bookmark
+            // TODO: persist bookmarks
+            _ => app::Signal::Nop,
+        }
     }
 }
