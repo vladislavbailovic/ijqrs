@@ -5,7 +5,7 @@ use tui::{
     layout::Rect,
     style::{Color, Style},
     text::{Span, Spans},
-    widgets::{Block, Borders, Paragraph, Wrap},
+    widgets::{Block, Borders, Paragraph, Wrap, Clear},
     Frame,
 };
 
@@ -19,6 +19,7 @@ pub enum Panel {
     Source,
     Output,
     Command,
+    Bookmarks,
     Help,
 }
 
@@ -106,6 +107,22 @@ pub fn draw_app<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
     frame.render_widget(source_output, source_size);
     frame.render_widget(result_output, result_size);
     frame.render_widget(cmd_output, cmd_size);
+
+    if let app::Mode::Bookmarks = state.mode() {
+        let padding = 3;
+        let bm_area = Rect::new(
+            frame_size.x + padding,
+            frame_size.y + padding,
+            frame_size.width - (padding * 2),
+            frame_size.height - (padding * 2),
+        );
+        
+        let bookmarks = Paragraph::new(state.bookmarks.get_content())
+            .block(get_block(&Panel::Bookmarks, "Bookmarks".to_string(), state))
+            .wrap(Wrap { trim: false });
+        frame.render_widget(Clear, bm_area);
+        frame.render_widget(bookmarks, bm_area);
+    }
 }
 
 fn get_styled(content: &str, index: usize) -> Vec<Spans> {
@@ -136,6 +153,7 @@ fn get_block(panel: &Panel, title: String, state: &app::State) -> Block<'static>
             _ => COLOR_FG,
         },
         Panel::Help => COLOR_FG_ACTIVE,
+        Panel::Bookmarks => COLOR_FG_ACTIVE,
     };
     Block::default()
         .title(String::from(" ") + &title + " ")

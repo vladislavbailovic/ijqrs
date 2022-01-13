@@ -11,11 +11,13 @@ pub enum Signal {
     Quit,
     Nop,
     Run,
+    Bookmark,
 }
 
 pub enum Mode {
     Internal,
     Shell,
+    Bookmarks,
     Help,
 }
 
@@ -27,6 +29,7 @@ pub enum Status {
 pub struct State {
     pub output: ui::panels::Content,
     pub source: ui::panels::Content,
+    pub bookmarks: ui::panels::Bookmarks,
     pub filename: String,
 
     command: ui::panels::Command,
@@ -52,6 +55,7 @@ impl State {
     fn new(filename: &str, source: &str) -> State {
         let command = ui::panels::Command::new(String::from(".|keys"));
         let internal = ui::panels::Command::new(String::from(""));
+        let bookmarks = ui::panels::Bookmarks::new();
 
         let mut state = State {
             filename: String::from(filename),
@@ -60,6 +64,7 @@ impl State {
 
             command,
             internal,
+            bookmarks,
             active: ui::Panel::Command,
             mode: Mode::Shell,
         };
@@ -76,6 +81,7 @@ impl State {
             Mode::Shell => self.set_mode(Mode::Internal),
             Mode::Internal => self.set_mode(Mode::Shell),
             Mode::Help => self.set_mode(Mode::Shell),
+            Mode::Bookmarks => self.set_mode(Mode::Shell),
         };
     }
 
@@ -88,6 +94,7 @@ impl State {
             Mode::Internal => &self.internal,
             Mode::Shell => &self.command,
             Mode::Help => &self.command,
+            Mode::Bookmarks => &self.command,
         }
     }
 
@@ -106,6 +113,7 @@ impl State {
             Mode::Internal => Box::new(&mut self.internal),
             Mode::Shell => Box::new(&mut self.command),
             Mode::Help => Box::new(&mut self.command),
+            Mode::Bookmarks => Box::new(&mut self.bookmarks),
         }
     }
 
@@ -128,6 +136,7 @@ impl State {
             Mode::Shell => self.run_shell_command(),
             Mode::Internal => self.run_internal_command(),
             Mode::Help => (),
+            Mode::Bookmarks => (),
         }
     }
 
@@ -147,5 +156,10 @@ impl State {
             Err(result) => result,
         };
         self.output = ui::panels::Content::new(output, ui::Panel::Output);
+    }
+
+    pub fn add_bookmark(&mut self) {
+        let cmd = self.command.get_content();
+        self.bookmarks.add("bookmarkName", &cmd);
     }
 }

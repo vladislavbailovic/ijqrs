@@ -28,10 +28,22 @@ fn handle_key_event(key: KeyEvent, state: &mut app::State) -> app::Signal {
                 ui::Panel::Output => ui::Panel::Source,
                 ui::Panel::Source => ui::Panel::Command,
                 ui::Panel::Help => ui::Panel::Help,
+                ui::Panel::Bookmarks => ui::Panel::Bookmarks,
             };
             state.set_active(active);
             app::Signal::Nop
-        }
+        },
+        KeyEvent {
+            code: KeyCode::Char('s'),
+            modifiers: KeyModifiers::CONTROL,
+        } => {
+            let new_mode = match state.mode() {
+                app::Mode::Bookmarks => app::Mode::Shell,
+                _ => app::Mode::Bookmarks,
+            };
+            state.set_mode(new_mode);
+            app::Signal::Bookmark
+        },
         KeyEvent { code, modifiers } => match code {
             KeyCode::Esc => {
                 state.get_mut_active().handle_event(code, modifiers);
