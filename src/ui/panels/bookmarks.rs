@@ -17,11 +17,19 @@ impl Bookmarks {
     }
 
     pub fn add(&mut self, bm: &str) {
-        self.items.push(String::from(bm))
+        self.items.push(String::from(bm));
+        self.scroll.set_max(self.items.len() - 1);
     }
 
     pub fn items(&self) -> &Vec<String> {
         &self.items()
+    }
+
+    pub fn get(&self, idx: usize) -> String {
+        if idx < self.items.len() {
+            return self.items[idx].as_str().to_string();
+        }
+        "".to_string()
     }
 
     fn del(&mut self, idx: usize) -> bool {

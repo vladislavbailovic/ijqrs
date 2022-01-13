@@ -117,7 +117,9 @@ pub fn draw_app<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
             frame_size.height - (padding * 2),
         );
         
-        let bookmarks = Paragraph::new(state.bookmarks.get_content())
+        let bm_content = &state.bookmarks.get_content();
+        let bm_items = get_styled(bm_content, state.bookmarks.get_pos() as usize);
+        let bookmarks = Paragraph::new(bm_items)
             .block(get_block(&Panel::Bookmarks, "Bookmarks".to_string(), state))
             .wrap(Wrap { trim: false });
         frame.render_widget(Clear, bm_area);
