@@ -16,8 +16,12 @@ impl Default for Bookmarks {
 
 impl Bookmarks {
     pub fn new() -> Self {
+        let mut items = Vec::new();
+        for item in load_bookmarks() {
+            items.push(item);
+        }
         Self {
-            items: Vec::new(),
+            items,
             scroll: Scroller::new(0),
         }
     }
@@ -86,15 +90,53 @@ impl ui::Pane for Bookmarks {
             KeyCode::Delete => {
                 self.del_current_item();
                 app::Signal::Nop
-            },
+            }
             KeyCode::Char('d') => {
                 if KeyModifiers::CONTROL == modifiers {
                     self.del_current_item();
                 }
                 app::Signal::Nop
-            },
+            }
             // TODO: persist bookmarks
             _ => app::Signal::Nop,
         }
     }
+}
+
+use std::path::{Path, PathBuf};
+
+fn get_config_path() -> PathBuf {
+    let home = std::env::var("HOME").expect("Unable to resolve user home directory");
+    let path = Path::new(&home).join(".config").join("ijqrs");
+
+    if !path.exists() {
+        let dir = path
+            .to_str()
+            .expect("Unable to resolve the user config directory");
+        std::fs::create_dir_all(dir).expect("Unable to create the missing config directory");
+    }
+
+    return path;
+}
+
+fn get_bookmarks_file_path() -> String {
+    let path = get_config_path().join("bookmarks");
+    if !path.exists() {
+        std::fs::File::create(&path).expect("Unable to create the bookmarks file");
+    }
+    path.to_str()
+        .expect("Unable to resolve bookmarks file")
+        .to_string()
+}
+
+fn load_bookmarks() -> Vec<String> {
+    let mut result = Vec::new();
+    let bm_file = get_bookmarks_file_path();
+    let raw = std::fs::read_to_string(bm_file).expect("Unable to read bookmarks file");
+    for line in raw.split('\n') {
+        if !line.is_empty() {
+            result.push(line.to_string());
+        }
+    }
+    result
 }
