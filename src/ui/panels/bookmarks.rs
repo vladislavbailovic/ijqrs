@@ -37,6 +37,10 @@ impl Bookmarks {
         self.get(self.scroll.get())
     }
 
+    pub fn del_current_item(&mut self) -> bool {
+        self.del(self.scroll.get())
+    }
+
     fn get(&self, idx: usize) -> String {
         if idx < self.items.len() {
             return self.items[idx].as_str().to_string();
@@ -44,7 +48,7 @@ impl Bookmarks {
         "".to_string()
     }
 
-    fn _del(&mut self, idx: usize) -> bool {
+    fn del(&mut self, idx: usize) -> bool {
         if idx < self.items.len() {
             self.items.remove(idx);
             return true;
@@ -76,10 +80,19 @@ impl ui::Pane for Bookmarks {
         out
     }
 
-    fn handle_event(&mut self, code: KeyCode, _modifiers: KeyModifiers) -> app::Signal {
+    fn handle_event(&mut self, code: KeyCode, modifiers: KeyModifiers) -> app::Signal {
         match code {
             KeyCode::Enter => app::Signal::LoadBookmark(self.get_current_item()),
-            // TODO: delete bookmark
+            KeyCode::Delete => {
+                self.del_current_item();
+                app::Signal::Nop
+            },
+            KeyCode::Char('d') => {
+                if KeyModifiers::CONTROL == modifiers {
+                    self.del_current_item();
+                }
+                app::Signal::Nop
+            },
             // TODO: persist bookmarks
             _ => app::Signal::Nop,
         }
