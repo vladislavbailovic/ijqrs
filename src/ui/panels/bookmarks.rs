@@ -29,6 +29,7 @@ impl Bookmarks {
     pub fn add(&mut self, bm: &str) {
         if !self.items.contains(&String::from(bm)) {
             self.items.push(String::from(bm));
+            save_bookmarks(&self.items);
         }
         self.scroll.set_max(self.items.len() - 1);
     }
@@ -55,6 +56,7 @@ impl Bookmarks {
     fn del(&mut self, idx: usize) -> bool {
         if idx < self.items.len() {
             self.items.remove(idx);
+            save_bookmarks(&self.items);
             return true;
         }
         false
@@ -97,12 +99,12 @@ impl ui::Pane for Bookmarks {
                 }
                 app::Signal::Nop
             }
-            // TODO: persist bookmarks
             _ => app::Signal::Nop,
         }
     }
 }
 
+use std::io::Write;
 use std::path::{Path, PathBuf};
 
 fn get_config_path() -> PathBuf {
@@ -116,7 +118,7 @@ fn get_config_path() -> PathBuf {
         std::fs::create_dir_all(dir).expect("Unable to create the missing config directory");
     }
 
-    return path;
+    path
 }
 
 fn get_bookmarks_file_path() -> String {
@@ -139,4 +141,15 @@ fn load_bookmarks() -> Vec<String> {
         }
     }
     result
+}
+
+fn save_bookmarks(bms: &[String]) {
+    let mut bookmarks = String::new();
+    for bm in bms {
+        bookmarks.push_str(&format!("{}\n", bm));
+    }
+    let fpath = get_bookmarks_file_path();
+    let mut file = std::fs::File::create(fpath).expect("Unable to create the bookmarks file");
+    file.write_all(bookmarks.as_bytes())
+        .expect("Error writing bookmarks file");
 }
