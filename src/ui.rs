@@ -2,7 +2,7 @@ use super::{app, help};
 use crossterm::event::{KeyCode, KeyModifiers};
 use tui::{
     backend::Backend,
-    layout::Rect,
+    layout::{Constraint, Direction, Layout, Rect},
     style::{Color, Style},
     text::{Span, Spans},
     widgets::{Block, Borders, Clear, Paragraph, Wrap},
@@ -44,10 +44,29 @@ pub fn draw<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
 }
 
 pub fn draw_help<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
-    let output = Paragraph::new(help::usage() + "\n" + help::shortcuts().as_str())
-        .block(get_block(&Panel::Help, String::from("Help"), state))
-        .wrap(Wrap { trim: false });
-    frame.render_widget(output, frame.size());
+    let hparts = Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints([Constraint::Percentage(50), Constraint::Min(1)].as_ref())
+        .split(frame.size());
+    let mut parts = Vec::new();
+    for hp in &hparts {
+        let vparts = Layout::default()
+            .direction(Direction::Vertical)
+            .constraints([Constraint::Percentage(50), Constraint::Min(1)].as_ref())
+            .split(*hp);
+        for vp in vparts {
+            parts.push(vp);
+        }
+    }
+
+    let hlp = help::get_help();
+    for (idx, title) in hlp.keys().enumerate() {
+        let help_string = &hlp[title.as_str()].join("\n");
+        let output = Paragraph::new(help_string.to_string())
+            .block(get_block(&Panel::Help, title.to_string(), state))
+            .wrap(Wrap { trim: false });
+        frame.render_widget(output, parts[idx]);
+    }
 }
 
 pub fn draw_app<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
