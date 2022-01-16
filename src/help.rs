@@ -5,6 +5,7 @@ const SHORTCUTS: &str = "Shortcuts";
 const BOOKMARKS: &str = "Bookmarks";
 const COMMANDS: &str = "Commands";
 
+// TODO: preserve ordering somehow
 pub fn get_help() -> HashMap<String, Vec<String>> {
     HashMap::from([
         (
@@ -41,12 +42,4 @@ pub fn get_help() -> HashMap<String, Vec<String>> {
             ],
         ),
     ])
-}
-
-pub fn usage() -> String {
-    get_help()[USAGE].join("\n")
-}
-
-pub fn shortcuts() -> String {
-    get_help()[SHORTCUTS].join("\n")
 }
