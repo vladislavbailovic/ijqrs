@@ -35,7 +35,15 @@ fn main() {
 }
 
 fn show_help() {
-    println!("{}", help::usage());
+    let hlp = help::get_help();
+    println!("");
+    for title in hlp.keys() {
+        println!("--- {}: ---", title);
+        for line in &hlp[title.as_str()] {
+            println!("{}", line);
+        }
+        println!("");
+    }
 }
 
 fn show_version() {

@@ -1,14 +1,4 @@
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyModifiers};
-use std::collections::HashMap;
-
-pub fn global_keys() -> HashMap<&'static str, &'static str> {
-    HashMap::from([
-        ("Ctrl+q", "Quit"),
-        ("Ctrl+w", "Switch panel"),
-        ("Esc", "Switch mode"),
-        ("?", "Show help"),
-    ])
-}
 
 use super::app;
 use super::ui;
