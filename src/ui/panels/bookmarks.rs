@@ -17,13 +17,12 @@ impl Default for Bookmarks {
 impl Bookmarks {
     pub fn new() -> Self {
         let mut items = Vec::new();
+        let mut scroll = Scroller::new(0);
         for item in load_bookmarks() {
             items.push(item);
         }
-        Self {
-            items,
-            scroll: Scroller::new(0),
-        }
+        scroll.set_max(items.len() - 1);
+        Self { items, scroll }
     }
 
     pub fn add(&mut self, bm: &str) {
