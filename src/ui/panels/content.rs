@@ -119,6 +119,8 @@ impl ui::Pane for Content {
             KeyCode::Char('l') => {
                 if modifiers == KeyModifiers::CONTROL {
                     self.reset_search()
+                } else if let PatternMode::Receiving = self.mode {
+                    self.push('l');
                 }
             }
             KeyCode::Char('n') => match self.mode {

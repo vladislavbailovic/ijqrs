@@ -91,14 +91,14 @@ pub fn draw_app<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
     let styled = get_styled(content.as_str(), state.source.highlight);
     let source_output = Paragraph::new(styled)
         .block(get_block(&Panel::Source, String::from("Source"), state))
-        .scroll((state.source.get_pos() as u16, 0))
+        .scroll((state.source.get_pos(), 0))
         .wrap(Wrap { trim: false });
 
     let content = state.output.get_content();
     let styled = get_styled(content.as_str(), state.output.highlight);
     let result_output = Paragraph::new(styled)
         .block(get_block(&Panel::Output, String::from("Result"), state))
-        .scroll((state.output.get_pos() as u16, 0))
+        .scroll((state.output.get_pos(), 0))
         .wrap(Wrap { trim: false });
 
     let cmd_title = match *state.mode() {
