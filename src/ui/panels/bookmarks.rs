@@ -107,7 +107,9 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 
 fn get_config_path() -> PathBuf {
-    let home = std::env::var("HOME").expect("Unable to resolve user home directory");
+    let home = std::env::var("HOME")
+        .or_else(|_| std::env::var("HOMEPATH"))
+        .expect("Unable to resolve user home directory");
     let path = Path::new(&home).join(".config").join("ijqrs");
 
     if !path.exists() {
