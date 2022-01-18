@@ -21,7 +21,9 @@ impl Bookmarks {
         for item in load_bookmarks() {
             items.push(item);
         }
-        scroll.set_max(items.len() - 1);
+        if items.len() > 1 {
+            scroll.set_max(items.len() - 1);
+        }
         Self { items, scroll }
     }
 
