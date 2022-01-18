@@ -29,6 +29,19 @@ impl Content {
         self.pattern.as_str().to_string()
     }
 
+    pub fn get_title(&self, base: &str) -> String {
+        let suffix = match self.mode {
+            PatternMode::None => String::from(""),
+            PatternMode::Receiving => {
+                format!(": {}_", self.pattern())
+            }
+            PatternMode::Matching => {
+                format!(": [{}] <{}>", self.pattern(), self.highlight)
+            }
+        };
+        format!("{}{}", base, suffix)
+    }
+
     fn push(&mut self, c: char) {
         self.pattern.push(c);
     }
