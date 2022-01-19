@@ -8,3 +8,13 @@ pub mod bookmarks;
 pub use bookmarks::Bookmarks;
 
 pub use super::scroller::Scroller;
+
+#[derive(Debug, PartialEq)]
+pub enum Panel {
+    Source,
+    Output,
+    Command,
+    Bookmarks,
+    Help,
+}
+

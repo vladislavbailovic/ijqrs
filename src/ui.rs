@@ -13,15 +13,7 @@ pub mod panels;
 pub mod scroller;
 
 pub use scroller::Scroller;
-
-#[derive(Debug, PartialEq)]
-pub enum Panel {
-    Source,
-    Output,
-    Command,
-    Bookmarks,
-    Help,
-}
+pub use panels::Panel;
 
 pub trait Pane {
     fn scroll_up(&mut self);
@@ -184,8 +176,8 @@ fn get_block(panel: &Panel, title: &str, state: &app::State) -> Block<'static> {
 
 fn get_title(panel: &Panel, title: &str, state: &app::State) -> String {
     match panel {
-        Panel::Source => state.source.get_title(&title),
-        Panel::Output => state.output.get_title(&title),
+        Panel::Source => state.source.get_title(title),
+        Panel::Output => state.output.get_title(title),
         _ => title.to_string(),
     }
 }
