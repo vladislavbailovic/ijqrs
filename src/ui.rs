@@ -33,7 +33,7 @@ pub trait Pane {
 }
 
 const COLOR_BG: Color = Color::Black;
-const COLOR_FG: Color = Color::Gray;
+const COLOR_FG: Color = Color::DarkGray;
 const COLOR_FG_ACTIVE: Color = Color::White;
 
 pub fn draw<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
