@@ -1,5 +1,4 @@
 use super::{app, help};
-use crossterm::event::{KeyCode, KeyModifiers};
 use tui::{
     backend::Backend,
     layout::{Constraint, Direction, Layout, Rect},
@@ -14,15 +13,7 @@ pub mod scroller;
 
 pub use scroller::Scroller;
 pub use panels::Panel;
-
-pub trait Pane {
-    fn scroll_up(&mut self);
-    fn scroll_down(&mut self);
-    fn get_pos(&self) -> u16;
-    fn get_content(&self) -> String;
-    fn get_type(&self) -> &Panel;
-    fn handle_event(&mut self, code: KeyCode, modifiers: KeyModifiers) -> app::Signal;
-}
+pub use panels::Pane;
 
 const COLOR_BG: Color = Color::Black;
 const COLOR_FG: Color = Color::DarkGray;
