@@ -16,8 +16,8 @@ pub use panels::Panel;
 pub use panels::Pane;
 
 const COLOR_BG: Color = Color::Black;
-const COLOR_FG: Color = Color::DarkGray;
-const COLOR_FG_ACTIVE: Color = Color::White;
+const COLOR_FG: Color = Color::Rgb(184, 184, 184);
+const COLOR_FG_ACTIVE: Color = Color::Rgb(255, 255, 255);
 
 pub fn draw<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
     match state.mode() {
@@ -26,7 +26,7 @@ pub fn draw<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
     }
 }
 
-pub fn draw_help<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
+fn draw_help<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
     let hparts = Layout::default()
         .direction(Direction::Horizontal)
         .constraints([Constraint::Percentage(50), Constraint::Min(1)].as_ref())
@@ -52,7 +52,7 @@ pub fn draw_help<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
     }
 }
 
-pub fn draw_app<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
+fn draw_app<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
     let frame_size = frame.size();
     let half_width = frame_size.width / 2;
     let vert_height = frame_size.height - 3;
