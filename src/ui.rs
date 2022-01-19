@@ -63,7 +63,7 @@ pub fn draw_help<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
     for (idx, title) in hlp.keys().enumerate() {
         let help_string = &hlp[title.as_str()].join("\n");
         let output = Paragraph::new(help_string.to_string())
-            .block(get_block(&Panel::Help, title.to_string(), state))
+            .block(get_block(&Panel::Help, title, state))
             .wrap(Wrap { trim: false });
         frame.render_widget(output, parts[idx]);
     }
@@ -90,21 +90,21 @@ pub fn draw_app<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
     let content = state.source.get_content();
     let styled = get_styled(content.as_str(), state.source.highlight);
     let source_output = Paragraph::new(styled)
-        .block(get_block(&Panel::Source, String::from("Source"), state))
+        .block(get_block(&Panel::Source, "Source", state))
         .scroll((state.source.get_pos(), 0))
         .wrap(Wrap { trim: false });
 
     let content = state.output.get_content();
     let styled = get_styled(content.as_str(), state.output.highlight);
     let result_output = Paragraph::new(styled)
-        .block(get_block(&Panel::Output, String::from("Result"), state))
+        .block(get_block(&Panel::Output, "Result", state))
         .scroll((state.output.get_pos(), 0))
         .wrap(Wrap { trim: false });
 
     let cmd_title = match *state.mode() {
-        app::Mode::Shell => String::from("jq Command"),
-        app::Mode::Internal => String::from("Internal Command"),
-        _ => String::from(""),
+        app::Mode::Shell => "jq Command",
+        app::Mode::Internal => "Internal Command",
+        _ => "",
     };
     let mut cmd = state.command().get_content();
     let cursor = state.command().cursor();
@@ -139,7 +139,7 @@ pub fn draw_app<B: Backend>(frame: &mut Frame<B>, state: &mut app::State) {
         let bm_content = &state.bookmarks.get_content();
         let bm_items = get_styled(bm_content, state.bookmarks.get_pos() as usize);
         let bookmarks = Paragraph::new(bm_items)
-            .block(get_block(&Panel::Bookmarks, "Bookmarks".to_string(), state))
+            .block(get_block(&Panel::Bookmarks, "Bookmarks", state))
             .wrap(Wrap { trim: false });
         frame.render_widget(Clear, bm_area);
         frame.render_widget(bookmarks, bm_area);
@@ -158,7 +158,7 @@ fn get_styled(content: &str, index: usize) -> Vec<Spans> {
     styled
 }
 
-fn get_block(panel: &Panel, title: String, state: &app::State) -> Block<'static> {
+fn get_block(panel: &Panel, title: &str, state: &app::State) -> Block<'static> {
     let title = get_title(panel, title, state);
     let fg: Color = match panel {
         Panel::Source => match state.get_active().get_type() {
@@ -182,10 +182,10 @@ fn get_block(panel: &Panel, title: String, state: &app::State) -> Block<'static>
         .style(Style::default().fg(fg).bg(COLOR_BG))
 }
 
-fn get_title(panel: &Panel, title: String, state: &app::State) -> String {
+fn get_title(panel: &Panel, title: &str, state: &app::State) -> String {
     match panel {
         Panel::Source => state.source.get_title(&title),
         Panel::Output => state.output.get_title(&title),
-        _ => title,
+        _ => title.to_string(),
     }
 }
